@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VRE · Investment Dashboard · FinSuccess</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+
+:root{
+ --navy:#201D5E; --navy2:#2E2A7A; --green:#82BC28; --purple:#9E2FB0; --gold:#F3A712; --blue:#2E75B6;
+ --red:#D64545; --ink:#1a1f2b; --mut:#6b7789; --line:#e3e8f0; --bg:#f4f6fa; --card:#ffffff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.55}
+.brandbar{background:#fff;border-bottom:1px solid var(--line);padding:10px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brandbar img{height:34px}
+.brandbar .meta{font-size:11px;color:var(--mut);text-align:right}
+.titleband{background:linear-gradient(110deg,var(--navy),#3a3596);color:#fff;padding:20px 22px}
+.titleband h1{margin:0;font-size:25px;letter-spacing:-.4px}
+.titleband p{margin:6px 0 0;font-size:12.5px;color:#c9c6ee;max-width:1000px}
+.titleband .chips{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 11px;font-size:11px;font-weight:600}
+.chip.g{background:rgba(130,188,40,.22);border-color:rgba(130,188,40,.5)}
+.chip.y{background:rgba(243,167,18,.2);border-color:rgba(243,167,18,.5)}
+.chip.r{background:rgba(214,69,69,.22);border-color:rgba(214,69,69,.5)}
+nav{background:var(--navy);position:sticky;top:0;z-index:20;display:flex;overflow-x:auto;border-top:1px solid rgba(255,255,255,.08)}
+nav button{background:transparent;border:0;border-bottom:3px solid transparent;color:#b7b3e0;padding:11px 15px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+nav button:hover{color:#fff}
+nav button.on{color:#fff;border-bottom-color:var(--green);background:rgba(255,255,255,.06)}
+main{padding:20px 22px 60px;max-width:1560px;margin:0 auto}
+.tab{display:none}.tab.on{display:block}
+h2.sec{font-size:16px;margin:26px 0 4px;color:var(--navy);border-left:4px solid var(--green);padding-left:9px}
+h2.sec:first-child{margin-top:4px}
+.subtle{font-size:11.5px;color:var(--mut);margin:0 0 10px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.g21{grid-template-columns:2fr 1fr}.g12{grid-template-columns:1fr 2fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 15px;box-shadow:0 1px 3px rgba(20,25,45,.05)}
+.kpi .lab{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);font-weight:700}
+.kpi .val{font-size:25px;font-weight:800;margin:5px 0 2px;letter-spacing:-.6px;color:var(--navy)}
+.kpi .sub{font-size:11px;color:var(--mut)}
+.up{color:#2f8f4e}.dn{color:var(--red)}.wn{color:#b47c05}
+.tag{display:inline-block;padding:2px 7px;border-radius:5px;font-size:9.5px;font-weight:800;letter-spacing:.03em;border:1px solid;vertical-align:middle}
+.t1{color:#1d6b3a;background:#e8f6ec;border-color:#b6e0c3}
+.t2{color:#1c5a8a;background:#e7f1f9;border-color:#b7d6ec}
+.t3{color:#7a4a05;background:#fdf3e0;border-color:#f0d9a8}
+.t4{color:#7a3b3b;background:#fbecec;border-color:#eec4c4}
+.tn{color:#5b6472;background:#eef1f5;border-color:#d5dce5}
+.note{border-left:4px solid var(--blue);background:#eef4fb;border-radius:0 9px 9px 0;padding:11px 14px;font-size:12.5px;margin:10px 0}
+.note.g{border-color:var(--green);background:#f1f8e8}
+.note.y{border-color:var(--gold);background:#fdf6e7}
+.note.r{border-color:var(--red);background:#fceded}
+.note.p{border-color:var(--purple);background:#f8ecfa}
+.note b{color:var(--navy)}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:12px;min-width:760px}
+th{position:sticky;top:0;background:var(--navy);color:#fff;padding:9px 10px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;z-index:2}
+td{padding:9px 10px;border-bottom:1px solid #eef1f6;vertical-align:top}
+tbody tr:nth-child(even){background:#fafbfd}
+tbody tr:hover{background:#f0f4fb}
+td b{color:var(--navy)}
+.mini{font-size:10.5px;color:var(--mut);line-height:1.45}
+.bars .row{display:grid;grid-template-columns:150px 1fr 74px;gap:9px;align-items:center;margin:7px 0;font-size:11.5px}
+.bg{height:11px;border-radius:99px;background:#e9edf4;overflow:hidden}
+.bf{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--navy),var(--blue))}
+.bf.gr{background:linear-gradient(90deg,#5b9a1c,var(--green))}
+.bf.pu{background:linear-gradient(90deg,#7c1f8c,var(--purple))}
+.bf.go{background:linear-gradient(90deg,#c98505,var(--gold))}
+.bars .row b{text-align:right;font-size:11.5px}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px dashed #e6eaf1;font-size:12px}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--mut)}.kv b{text-align:right;color:var(--navy)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.inp,.sel{background:#fff;border:1px solid var(--line);color:var(--ink);padding:8px 10px;border-radius:8px;font-size:12px;outline:none}
+.inp:focus,.sel:focus{border-color:var(--blue)}
+.btn{background:var(--navy);border:1px solid var(--navy);color:#fff;padding:8px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--navy2)}
+.pj{background:#fff;border:1px solid var(--line);border-radius:11px;padding:14px;cursor:pointer;transition:.15s}
+.pj:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(32,29,94,.09)}
+.pj .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.pj .nm{font-weight:800;font-size:14px;color:var(--navy)}
+.pj .st{font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.st.selling{background:#e8f6ec;color:#1d6b3a}
+.st.building{background:#e7f1f9;color:#1c5a8a}
+.st.handover{background:#f8ecfa;color:#7c1f8c}
+.st.legal{background:#fdf3e0;color:#7a4a05}
+.det{display:none;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.det.on{display:block}
+.chartbox{position:relative;height:250px}
+.chartbox.sm{height:200px}
+.legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:9px;font-size:10.5px;color:var(--mut)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:middle}
+.wf{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.wf .s{border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;background:#fff}
+.wf .s small{font-size:10px;color:var(--mut);display:block}
+.wf .s b{display:block;font-size:19px;color:var(--navy);margin:5px 0 3px}
+.q{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:11px 0;border-bottom:1px solid #eef1f6}
+.q:last-child{border-bottom:0}
+.q .n{width:26px;height:26px;border-radius:7px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+.q .n.g{background:var(--green)}.q .n.y{background:var(--gold)}.q .n.r{background:var(--red)}.q .n.p{background:var(--purple)}
+.q h4{margin:0 0 3px;font-size:13px;color:var(--navy)}
+.q p{margin:0;font-size:12px;color:#3a4354}
+/* --- Gantt pipeline --- */
+.gw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+.gt{min-width:1000px}
+.grow{display:grid;grid-template-columns:206px 1fr;align-items:stretch;border-bottom:1px solid #eef1f6}
+.grow:last-child{border-bottom:0}
+.grow.hdr{position:sticky;top:0;background:var(--navy);color:#fff;z-index:3;border-bottom:0}
+.grow.hdr .glab{color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;background:var(--navy);border-right-color:rgba(255,255,255,.15)}
+.grow.grp{background:#f0f2f8}
+.grow.grp .glab{font-weight:800;color:var(--navy);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.glab{padding:8px 10px;font-size:11.5px;border-right:1px solid #eef1f6;display:flex;flex-direction:column;justify-content:center;background:#fff;position:sticky;left:0;z-index:2}
+.grow:nth-child(even) .glab{background:#fafbfd}
+.glab b{color:var(--navy);font-size:11.5px;line-height:1.3}
+.glab i{font-style:normal;font-size:9.5px;color:var(--mut)}
+.gtrack{position:relative;height:48px;background-image:repeating-linear-gradient(to right,transparent,transparent calc(20% - 1px),#eef1f6 calc(20% - 1px),#eef1f6 20%)}
+.grow.hdr .gtrack{height:auto;background:none;display:grid;grid-template-columns:repeat(5,1fr)}
+.gy{text-align:center;padding:8px 0;font-size:11px;font-weight:800;border-left:1px solid rgba(255,255,255,.16)}
+.gy small{display:block;font-size:8.5px;font-weight:500;color:#b7b3e0}
+.gs{position:absolute;height:12px;border-radius:4px;font-size:8.5px;font-weight:800;color:#fff;display:flex;align-items:center;padding:0 5px;white-space:nowrap;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.13)}
+.gs.launch{background:#5b9a1c}.gs.build{background:#2E75B6}.gs.hand{background:#201D5E}.gs.infra{background:#c98505}
+.gs.est{opacity:.58;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 4px,transparent 4px 8px)}
+.gnow{position:absolute;top:0;bottom:0;width:2px;background:var(--red);z-index:1}
+.gleg{display:flex;gap:15px;flex-wrap:wrap;padding:10px 12px;font-size:10.5px;color:var(--mut);border-top:1px solid var(--line);background:#fafbfd}
+.gleg i{display:inline-block;width:14px;height:9px;border-radius:3px;margin-right:5px;vertical-align:middle}
+footer{padding:18px 22px;font-size:11px;color:var(--mut);border-top:1px solid var(--line);background:#fff}
+@media(max-width:1150px){.g5,.g4{grid-template-columns:repeat(2,1fr)}.g3,.g21,.g12{grid-template-columns:1fr}.wf{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.g2,.g5,.g4{grid-template-columns:1fr}.bars .row{grid-template-columns:96px 1fr 60px}main{padding:14px}}
+@media print{nav,.btn,.toolbar{display:none!important}.tab{display:block!important;page-break-before:always}.card{break-inside:avoid}}
+/* ===== bổ sung riêng cho VRE ===== */
+.fmt{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:#fff}
+.fmt .nm{font-weight:800;font-size:14px;color:var(--navy)}
+.fmt .cnt{font-size:26px;font-weight:800;color:var(--navy);letter-spacing:-.6px}
+.occ{height:9px;border-radius:99px;background:#e9edf4;overflow:hidden;margin:5px 0 3px}
+.occ i{display:block;height:100%;border-radius:99px}
+.flow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0}
+.flow .n{background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:11.5px;min-width:120px}
+.flow .n b{display:block;color:var(--navy);font-size:14px;margin-top:2px}
+.flow .a{color:var(--mut);font-weight:800}
+.flow .n.hi{border-color:var(--gold);background:#fdf6e7}
+.flow .n.bad{border-color:var(--red);background:#fceded}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sl{margin:9px 0}
+.sl label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mut);font-weight:700;margin-bottom:4px}
+.sl label b{color:var(--navy)}
+.sl input[type=range]{width:100%;accent-color:var(--navy)}
+.res{background:linear-gradient(110deg,var(--navy),#3a3596);color:#fff;border-radius:11px;padding:15px;text-align:center}
+.res .big{font-size:34px;font-weight:800;letter-spacing:-1px;margin:4px 0}
+.res small{font-size:11px;color:#c9c6ee}
+.scn{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.scn button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px;font-size:11.5px;font-weight:700;cursor:pointer;color:var(--navy)}
+.scn button:hover{border-color:var(--blue);background:#eef4fb}
+.gs.open{background:#5b9a1c}.gs.cons{background:#2E75B6}.gs.shop{background:#9E2FB0}.gs.dep{background:#c98505}
+@media(max-width:900px){.calc{grid-template-columns:1fr}}
+</style></head><body>
+
+<div class="brandbar">
+  <img src="data:image/png;base64,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pCNz/cp8x4i3YVv7Y/ato48qr7x9w79h5gWRygATyh+pb1ddXR3s6UMhXJE91Qf/A8w3tz/cBqh7KgFZQMbo+GnlhttHFiARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgEbgpCBQVdbGPH6+OLi1VRWk0hOhKpvAhVAa6l5/fHVV6plRy5X3y9/Uh8MF7B2bMmfPoffdt2Xo3hFrgXl8pDMvJqeWVluqiIB5EwPWW+an5CKKXU1nZFblmzbNR0dGbo/d8WbSi8LwmGH1896fS/G8tB+OGrtIRUXBk/1IYoK+E92uJUIjiMDHYyy/F8CbRHf22/U1iplQyAz/fW7inprqflpISVgbBgR73BFOCzqN8uOv7u7O/Ln+UwXBid21IfQOqtfcmVe0/io3RRF2kGuJucTVpmjBs6OvxjRv92vQdUojBoImMjJzwRe0+9cj9n+46utFfyYRYHMQ98BnwH41gNp729Z6fP98R+/wLeU+Wlncn1dfaMb2ehb/9xhmejyRHFRry7qmcksW7UIyS66X3357v9TdPPFBT07dZKmUchc/2b8NHY5ncMCzQ51SjEfOFr65rx39tHa7jL760b82lxvee9Jf5lAwOEs/7+eGGG2bwL1jgpipAoxEfYHN5Ld39lrstJZ0Rez4P/QYwOYVw0Woxwfd5jY9X1fYmZcxSdErYnHP/gnj9W1TJTtAFVhs7yGJ0QkzUOG9cDBBk2p//8u3TrW075yqV7O3QmOPjG2S3UuKbW4ZTmByRxmzGOHDvZ1eABec6Fr7+3oltFaVtsTaTkw+xHVwBCh+I9WDGmhqtEe3t+ij10LH07OyLj65ZE98yvn7k+dUIEESL8OHHcu85e7Y+JSZWCBbghpchlyd4z9UFrnEFZIPy+ON7njHZaHPnZ4W+A9mOjmWtoPX1GdYVFjSlJyT5R7PZGOLxH6EAUZigm5amTJHqM9Jj354SK9dBmEFhWVHzcwC8EC17/vHxkS3nKzrjeBy6MypW+erCFWmTCj9BNEE4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">
+  <div class="meta"><b>VRE · CTCP Vincom Retail · HOSE</b><br>Dữ liệu chốt tới 07/09/2026 · BCTC Q2/2026 công bố 29/07/2026</div>
+</div>
+
+<div class="titleband">
+  <h1>VRE · Investment Dashboard</h1>
+  <p>Danh mục TTTM – Cỗ máy cho thuê – Chất lượng lợi nhuận – Đặt cọc &amp; hệ sinh thái Vin – Định giá theo cap rate. Cùng kỷ luật với dashboard VHM: mỗi ô số gắn nhãn nguồn theo 4 tier, chỗ nào doanh nghiệp <b>chưa công bố</b> thì ghi rõ là chưa công bố. Khác biệt cốt lõi: VHM là câu chuyện <i>hoá tiền quỹ đất</i>, VRE là câu chuyện <i>năng suất trên mỗi m² sàn</i> — và câu hỏi khó nhất của VRE không nằm ở mét vuông, mà ở 40% bảng cân đối chưa phải là mét vuông.</p>
+  <div class="chips">
+    <span class="chip g">Vận hành lõi: lấp đầy 88,6% · biên gộp 58,9% cao nhất nhiều quý</span>
+    <span class="chip y">Chất lượng LN: ~31% LNTT Q2 đến từ hoạt động tài chính</span>
+    <span class="chip r">Dòng tiền: FCF âm 3 năm liên tiếp · CFO 2025 −3.262 tỷ</span>
+    <span class="chip">Biến số lớn nhất: ~14.500–24.900 tỷ đặt cọc với VIC/VHM</span>
+  </div>
+</div>
+
+<nav>
+  <button class="on" data-t="ov">01 · Tổng quan &amp; Luận điểm</button>
+  <button data-t="mb">02 · Danh mục TTTM</button>
+  <button data-t="en">03 · Cỗ máy cho thuê</button>
+  <button data-t="qe">04 · Chất lượng lợi nhuận</button>
+  <button data-t="dp">05 · Đặt cọc &amp; Hệ sinh thái Vin</button>
+  <button data-t="pl">06 · Pipeline &amp; Tăng trưởng</button>
+  <button data-t="cp">07 · Cạnh tranh</button>
+  <button data-t="cf">08 · Dòng tiền &amp; Bảng cân đối</button>
+  <button data-t="vl">09 · Định giá</button>
+  <button data-t="fw">10 · Khung ra quyết định</button>
+  <button data-t="sr">11 · Nguồn &amp; Chất lượng DL</button>
+</nav>
+
+<main>
+
+<!-- ============ 01 TỔNG QUAN ============ -->
+<section id="ov" class="tab on">
+  <h2 class="sec">Kết quả Quý 2/2026 · số doanh nghiệp công bố</h2>
+  <p class="subtle">Toàn bộ khối này là <span class="tag t1">TIER 1</span> — BCTC hợp nhất Q2/2026, công bố 29/07/2026.</p>
+  <div class="grid g5">
+    <div class="card kpi"><div class="lab">Tổng doanh thu Q2</div><div class="val">2.374</div><div class="sub up">+10,8% YoY · tỷ đồng</div></div>
+    <div class="card kpi"><div class="lab">Doanh thu cho thuê &amp; dịch vụ</div><div class="val">2.268</div><div class="sub up">+9,7% · +11,5% nếu loại Nguyễn Chí Thanh</div></div>
+    <div class="card kpi"><div class="lab">Biên lợi nhuận gộp Q2</div><div class="val">58,9%</div><div class="sub up">+3,7 điểm % · cao nhất nhiều quý</div></div>
+    <div class="card kpi"><div class="lab">LNST Q2</div><div class="val">1.609</div><div class="sub up">+30,4% YoY · tỷ đồng</div></div>
+    <div class="card kpi"><div class="lab">Tỷ lệ lấp đầy toàn hệ thống</div><div class="val">88,6%</div><div class="sub wn">+2,3 đ% YoY · nhưng −0,3 đ% so Q1</div></div>
+  </div>
+
+  <div class="grid g5" style="margin-top:12px">
+    <div class="card kpi"><div class="lab">LNST 6 tháng</div><div class="val">3.215</div><div class="sub up">+33,4% · đạt 59,8% KH năm</div></div>
+    <div class="card kpi"><div class="lab">Doanh thu 6T (điều chỉnh)</div><div class="val">4.948</div><div class="sub">49% KH · DT thuần 4.667 tỷ (+9,2%)</div></div>
+    <div class="card kpi"><div class="lab">Lượt khách 6T</div><div class="val">112 tr</div><div class="sub up">+11,6% YoY</div></div>
+    <div class="card kpi"><div class="lab">Số TTTM đang vận hành</div><div class="val">91</div><div class="sub">Đan Phượng khai trương 28/08/2026</div></div>
+    <div class="card kpi"><div class="lab">Cổ tức tiền mặt 2025</div><div class="val">1.000đ</div><div class="sub up">Lần đầu sau 7 năm · ~2.272 tỷ · trả Q3/26</div></div>
+  </div>
+
+  <h2 class="sec">Bảng cân đối 30/06/2026 · nơi câu chuyện thật sự nằm</h2>
+  <div class="grid g5">
+    <div class="card kpi"><div class="lab">Tổng tài sản</div><div class="val">62.806</div><div class="sub">+2,5% từ đầu năm · tỷ đồng</div></div>
+    <div class="card kpi"><div class="lab">BĐS đầu tư &amp; đang xây dựng</div><div class="val">35.559</div><div class="sub">56,6% tổng tài sản</div></div>
+    <div class="card kpi"><div class="lab">Vốn chủ sở hữu</div><div class="val">49.311</div><div class="sub up">79% tổng nguồn vốn</div></div>
+    <div class="card kpi"><div class="lab">Vay &amp; trái phiếu</div><div class="val">6.406</div><div class="sub up">Nợ ròng ~564 tỷ · 1,1% VCSH</div></div>
+    <div class="card kpi"><div class="lab">Tiền &amp; tiền gửi có kỳ hạn</div><div class="val">5.843</div><div class="sub up">+28,7% từ đầu năm</div></div>
+  </div>
+  <div class="note y"><b>Đọc bảng cân đối này theo cách khác.</b> Tổng tài sản 62.806 tỷ, trong đó BĐS đầu tư 35.559 tỷ và tiền 5.843 tỷ — còn lại <b>~21.400 tỷ</b> là "tài sản khác". Phần lớn khối đó không phải trung tâm thương mại, mà là <b>tiền VRE đã đặt cọc cho Vingroup và Vinhomes</b> để giữ chỗ mặt bằng TTTM trong các đại đô thị tương lai. Nói cách khác: khoảng một phần ba bảng cân đối của một doanh nghiệp cho thuê đang nằm ở dạng <i>khoản phải thu từ công ty mẹ cũ</i>, chưa sinh ra một đồng tiền thuê nào. Đây là điểm mà mọi khung phân tích REIT tiêu chuẩn sẽ bỏ sót. Chi tiết ở <b>tab 05</b>.</div>
+
+  <h2 class="sec">Bảy điều tôi cho là quan trọng nhất khi đọc VRE lúc này</h2>
+  <div class="card">
+    <div class="q"><div class="n r">1</div><div><h4>Lợi nhuận kỷ lục 2025 phần lớn không đến từ việc cho thuê mặt bằng</h4><p>LNTT 2025 đạt 8.083 tỷ (+57,5%) — con số làm nên mọi tiêu đề báo chí. Nhưng <b>lợi nhuận từ hoạt động cho thuê cốt lõi chỉ 3.893 tỷ</b>, tăng vỏn vẹn 3,2% so với 3.773 tỷ năm 2024. Phần chênh ~4.190 tỷ đến từ thu nhập tài chính (lãi tiền gửi, lãi cọc) và <b>khoản lãi bất thường ~1.900 tỷ</b> từ chuyển nhượng Vincom Center Nguyễn Chí Thanh trong Q4/2025. Riêng Q4/2025: LNTT 3.341 tỷ nhưng lợi nhuận từ hoạt động chỉ 847 tỷ. Trước khi dùng P/E, phải tách hai lớp này ra.</p></div></div>
+    <div class="q"><div class="n r">2</div><div><h4>Khoảng một phần ba bảng cân đối là tiền đặt cọc cho hệ sinh thái Vin — vừa là pipeline, vừa là rủi ro, và là cùng một dòng</h4><p>Các nguồn thứ cấp ghi nhận số dư đặt cọc/hợp tác kinh doanh của VRE với VIC–VHM tăng từ <b>14.220 tỷ (T9/2024) → 16.160 tỷ (Q2/2025) → ~24.895 tỷ (cuối 2025)</b>, trong đó 14.512 tỷ là để giữ chỗ <b>764.000 m² sàn TTTM</b> tương lai. Đây chính là "quỹ đất" của VRE — nhưng nó nằm dưới dạng tiền đã trả cho một bên liên quan, không phải tài sản đang vận hành. Nó tạo ra lãi cọc (một phần lớn của 625 tỷ lợi nhuận tài chính Q2), nghĩa là <i>một phần lợi nhuận của VRE đến từ việc cho công ty mẹ cũ dùng tiền của mình</i>. <b>VRE không còn là công ty con của Vingroup từ 2024, nhưng bảng cân đối thì vẫn còn.</b></p></div></div>
+    <div class="q"><div class="n y">3</div><div><h4>"Còn 12% diện tích trống để khai thác" không có nghĩa là còn 12% doanh thu</h4><p>Chủ tịch Trần Mai Hoa nêu tại ĐHĐCĐ 2026: lấp đầy bình quân 88%, còn ~12% dư địa. Nhưng bóc theo mô hình: <b>Vincom Center đã 96%, Mega Mall đã 93%</b> — gần như kín. Chỗ trống thực sự nằm ở <b>Vincom Plaza tỉnh lẻ (84,1%)</b> và <b>Vincom+ (80,2%)</b>: đúng nhóm tài sản có giá thuê thấp nhất và đang chịu áp lực cạnh tranh lớn nhất. Diện tích trống ở đó trống <i>vì thị trường không muốn thuê</i>, không phải vì VRE chưa chào. Lấp đầy 12% cuối cùng luôn đắt hơn 12% đầu tiên.</p></div></div>
+    <div class="q"><div class="n r">4</div><div><h4>Cỗ máy in tiền không ra tiền: EBITDA 5.274 tỷ nhưng dòng tiền kinh doanh −3.262 tỷ</h4><p>Năm 2025 EBITDA đạt 5.274 tỷ (~60% doanh thu) — biên đặc trưng của mô hình cho thuê tốt. Nhưng <b>dòng tiền từ hoạt động kinh doanh âm 3.262 tỷ</b>, do phải thu và các khoản trả trước/hợp tác đầu tư tăng mạnh. Và đây không phải chuyện một năm: <b>dòng tiền tự do âm ba năm liên tiếp — 2023: −3.686 tỷ; 2024: −1.378 tỷ; 2025: −1.546 tỷ</b>. Với một landlord, đó là điều bất thường. Câu hỏi phải trả lời là: tiền đi đâu, và bao giờ quay lại.</p></div></div>
+    <div class="q"><div class="n y">5</div><div><h4>Cổ tức đầu tiên sau 7 năm được tài trợ bằng bán tài sản và vay nợ, không phải bằng dòng tiền hoạt động</h4><p>VRE chia 1.000đ/cp (~2.272 tỷ), trả Q3/2026 — tín hiệu tốt về mặt quản trị vốn. Nhưng nhìn nguồn tiền của năm 2025: vị thế tiền mặt cải thiện lên 4.435 tỷ nhờ <b>3.630 tỷ thu từ bán Nguyễn Chí Thanh</b> và <b>nợ vay dài hạn tăng từ 2.523 lên 6.380 tỷ</b> — trong khi dòng tiền hoạt động âm. Cổ tức bền vững hay không phụ thuộc vào việc CFO có quay về dương trong 2026–2027, chứ không phụ thuộc vào việc bảng cân đối đang sạch.</p></div></div>
+    <div class="q"><div class="n">6</div><div><h4>Con số quan trọng nhất của VRE là con số duy nhất họ không công bố: lưu lượng khách like-for-like</h4><p>Traffic toàn hệ thống 2025 tăng 21% lên ~210 triệu lượt — nhưng phần lớn đến từ các TTTM mở mới (đặc biệt Mega Mall Smart City, Ocean City, Royal Island). Ở chiều ngược lại, TCBS ghi nhận nhiều Vincom Plaza tỉnh lẻ và một số Vincom Center cũ <b>đang mất khách vào tay Aeon Mall</b> — nơi mỗi điểm hút 6–10 triệu lượt/năm so với ~5 triệu/điểm của Vincom Mega Mall. Nếu tách traffic mở mới ra, phần còn lại có thể đang đi ngang hoặc giảm. <b>VRE không công bố LFL traffic, LFL rent, hay doanh thu theo từng TTTM</b> — nên đây là vùng mù lớn nhất của hồ sơ đầu tư.</p></div></div>
+    <div class="q"><div class="n p">7</div><div><h4>Khoảng cách 35% giữa dự phóng của CTCK và kế hoạch của chính doanh nghiệp cho biết mảng shophouse đã trượt lịch</h4><p>MBS (10/2025) dự phóng doanh thu 2026 đạt <b>13.759 tỷ</b>, dựa trên giả định bàn giao hai dự án shophouse Vinhomes Royal Island (85.600 m²) và Golden Avenue (24.200 m²). Nhưng kế hoạch ĐHĐCĐ tháng 4/2026 của chính VRE chỉ đặt <b>10.132 tỷ</b>, trong đó <b>chuyển nhượng BĐS vỏn vẹn 413 tỷ</b>. Chênh lệch ~3.600 tỷ gần như toàn bộ nằm ở mảng shophouse — nghĩa là catalyst mà MBS xây luận điểm KHẢ QUAN lên đó đã bị đẩy sang 2027 hoặc muộn hơn. Đây là ví dụ điển hình vì sao <b>không nên trộn dự phóng cũ của CTCK với kế hoạch mới của doanh nghiệp</b>.</p></div></div>
+  </div>
+
+  <h2 class="sec">Định giá thị trường · cần tự kiểm chứng lại tại thời điểm sử dụng</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Vùng giá gần đây</div><div class="val">~22–26k</div><div class="sub">29/07: 22.750 · 31/07: 25.650 · 17/08: 24.400 <span class="tag t4">TIER 4</span></div></div>
+    <div class="card kpi"><div class="lab">Vốn hóa tương ứng</div><div class="val">~48–58k tỷ</div><div class="sub">Tùy giá &amp; số cổ phiếu dùng để tính</div></div>
+    <div class="card kpi"><div class="lab">P/E báo cáo · P/B</div><div class="val">~7,0x · ~1,0x</div><div class="sub dn">P/E rẻ ảo — E chứa khoản bất thường</div></div>
+    <div class="card kpi"><div class="lab">P/E chuẩn hóa</div><div class="val">~14–15x</div><div class="sub wn">Ngang peer khu vực, không còn rẻ</div></div>
+  </div>
+  <div class="note r"><b>Ba cảnh báo trước khi dùng ô này.</b> <b>(1) Số cổ phiếu có hai con số khác nhau:</b> vốn điều lệ 23.288 tỷ ⇒ 2.328,8 triệu cp, nhưng cổ phiếu đang lưu hành là <b>2.272,3 triệu</b> (chênh ~56,5 triệu cp quỹ — khớp với việc cổ tức 1.000đ/cp tổng ~2.272 tỷ). Dùng nhầm mẫu số làm lệch EPS/BVPS ~2,5%. <b>(2) P/E 7x là bẫy:</b> EPS 2025 (2.836đ) đã được nâng bởi lãi bất thường ~1.900 tỷ; loại ra, EPS chuẩn hóa ~2.000đ và P/E chuẩn hóa lên 14–15x — ngang Simon Property (14,2x), Central Pattana (14,9x), CapitaLand (17,0x). <b>(3) Giá biến động rất mạnh:</b> từ đỉnh ~35.000đ đầu tháng 5/2026 xuống sát 21.000đ cuối tháng 7 (−40% trong chưa đầy ba tháng), rồi hồi. <b>Hãy lấy giá và số cổ phiếu trực tiếp từ HOSE tại ngày sử dụng, đừng dùng ô này để ra quyết định.</b></div>
+</section>
+
+<!-- ============ 02 DANH MỤC TTTM ============ -->
+<section id="mb" class="tab">
+  <h2 class="sec">"Mallbank" · quy mô và cấu trúc danh mục</h2>
+  <p class="subtle">Số liệu danh mục theo mô hình là <span class="tag t1">TIER 1</span> (VRE Earnings Presentation 2025, chốt 31/12/2025). Các chỉ số năng suất trên mỗi m² là <b>tính toán của tôi</b> từ số công bố — xem phần phương pháp bên dưới.</p>
+  <div class="grid g5">
+    <div class="card kpi"><div class="lab">Số TTTM đang vận hành</div><div class="val">91</div><div class="sub">90 cuối 2025 + Đan Phượng 28/08/2026</div></div>
+    <div class="card kpi"><div class="lab">Tổng diện tích sàn (GFA)</div><div class="val">~1,94 tr</div><div class="sub">m² · 1.914.400 m² cuối 2025</div></div>
+    <div class="card kpi"><div class="lab">Độ phủ địa lý</div><div class="val">31/34</div><div class="sub">tỉnh thành · không đối thủ nào có</div></div>
+    <div class="card kpi"><div class="lab">Lượt khách 2025</div><div class="val">~210 tr</div><div class="sub up">+21% YoY · ~2,3 tr/TTTM</div></div>
+    <div class="card kpi"><div class="lab">Thương hiệu khách thuê</div><div class="val">~1.000</div><div class="sub">+140 thương hiệu mới trong 6T2026</div></div>
+  </div>
+
+  <h2 class="sec">Bốn mô hình · và vì sao chúng không thể gộp lại thành một con số</h2>
+  <div class="grid g4">
+    <div class="card fmt"><div class="nm">Vincom Center</div><div class="mini">Cao cấp · lõi đô thị · 50.000–70.000 m² GLA</div>
+      <div class="cnt">6</div><div class="mini">TTTM · ~233.400 m² GFA (12,2%)</div>
+      <div class="occ"><i style="width:96%;background:linear-gradient(90deg,#5b9a1c,var(--green))"></i></div>
+      <div class="mini"><b>Lấp đầy ~96%</b> · gần như kín · footfall +21,5%</div>
+      <div class="mini" style="margin-top:6px">Bà Triệu, Đồng Khởi, Phạm Ngọc Thạch. Vị trí CBD gần như không thể sao chép — đây là phần tài sản có giá trị ẩn lớn nhất, và cũng là phần đã hết dư địa lấp đầy.</div></div>
+    <div class="card fmt"><div class="nm">Vincom Mega Mall</div><div class="mini">Đại đô thị Vinhomes · &gt;100.000 m² GFA</div>
+      <div class="cnt">8</div><div class="mini">TTTM · ~657.900 m² GFA (34,4%)</div>
+      <div class="occ"><i style="width:93%;background:linear-gradient(90deg,#1c5a8a,var(--blue))"></i></div>
+      <div class="mini"><b>Lấp đầy ~93%</b> · từ 86,5% đầu 2024 · footfall +19,2%</div>
+      <div class="mini" style="margin-top:6px">Bình quân ~82.000 m²/điểm. Toàn bộ pipeline mở mới thuộc mô hình này. Traffic nền có sẵn từ cư dân đại đô thị — nhưng cũng vì thế mà phụ thuộc hoàn toàn vào tiến độ Vinhomes.</div></div>
+    <div class="card fmt"><div class="nm">Vincom Plaza</div><div class="mini">Tầm trung · tỉnh thành &amp; vệ tinh · 10.000–25.000 m²</div>
+      <div class="cnt">61</div><div class="mini">TTTM · ~951.100 m² GFA (49,7%)</div>
+      <div class="occ"><i style="width:84.1%;background:linear-gradient(90deg,#c98505,var(--gold))"></i></div>
+      <div class="mini"><b>Lấp đầy 84,1%</b> · footfall +22,3%</div>
+      <div class="mini" style="margin-top:6px"><b>Xương sống về diện tích nhưng là điểm yếu về lấp đầy.</b> Gần một nửa GFA của cả hệ thống nằm ở đây, và đây cũng là nơi chứa phần lớn 11,4% diện tích còn trống.</div></div>
+    <div class="card fmt"><div class="nm">Vincom+</div><div class="mini">Cộng đồng · khu dân cư · &lt;10.000 m² GLA</div>
+      <div class="cnt">15</div><div class="mini">TTTM · ~72.000 m² GFA (3,8%)</div>
+      <div class="occ"><i style="width:80.2%;background:linear-gradient(90deg,#a53a3a,var(--red))"></i></div>
+      <div class="mini"><b>Lấp đầy 80,2%</b> · thấp nhất hệ thống · footfall +21,3%</div>
+      <div class="mini" style="margin-top:6px">Quy mô nhỏ nên ảnh hưởng tài chính hạn chế, nhưng là chỉ báo sớm về sức khỏe tiêu dùng ở tầng đáy — và về việc mô hình TTTM nhỏ có còn chỗ đứng trước cửa hàng tiện lợi và TMĐT không.</div></div>
+  </div>
+
+  <div class="grid g21" style="margin-top:12px">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Phân bổ GFA và số lượng theo mô hình</div>
+      <div class="chartbox"><canvas id="cFmt"></canvas></div>
+      <div class="mini" style="margin-top:8px">Nghịch lý cấu trúc: <b>Vincom Plaza chiếm 67% số lượng TTTM nhưng chỉ 50% diện tích</b>, trong khi <b>Mega Mall chỉ 9% số lượng nhưng 34% diện tích</b>. Nghĩa là khi đọc tin "VRE có 91 trung tâm thương mại", con số đó nói rất ít về năng lực tạo doanh thu — 8 Mega Mall có sức nặng gần bằng 61 Plaza.</div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Cấu trúc "12% dư địa lấp đầy" thực sự nằm ở đâu</div>
+      <div class="bars">
+        <div class="row"><span>Vincom Center</span><div class="bg"><div class="bf gr" style="width:4%"></div></div><b>~9.300 m²</b></div>
+        <div class="row"><span>Vincom Mega Mall</span><div class="bg"><div class="bf gr" style="width:16%"></div></div><b>~46.000 m²</b></div>
+        <div class="row"><span>Vincom Plaza</span><div class="bg"><div class="bf go" style="width:100%"></div></div><b>~151.200 m²</b></div>
+        <div class="row"><span>Vincom+</span><div class="bg"><div class="bf go" style="width:9%"></div></div><b>~14.300 m²</b></div>
+      </div>
+      <div class="note y" style="margin-top:10px;font-size:11.5px"><b>Diện tích trống ước tính theo mô hình</b> = GFA × (1 − tỷ lệ lấp đầy Q4/2025). Tổng ~220.800 m². Trong đó <b>Vincom Plaza chiếm 68%</b> và Vincom+ chiếm 6,5% — tức <b>gần ba phần tư dư địa lấp đầy nằm ở hai mô hình có giá thuê thấp nhất và áp lực cạnh tranh cao nhất</b>. Đây là lý do không nên quy đổi "12% trống" thành "12% doanh thu tiềm năng": mỗi m² lấp thêm ở Plaza tỉnh lẻ tạo ra ít doanh thu hơn đáng kể so với một m² ở Vincom Center. <span class="tag t3">Ước tính của tôi</span></div>
+    </div>
+  </div>
+
+  <h2 class="sec">Năng suất trên mỗi m² · thước đo trung tâm của hồ sơ VRE</h2>
+  <p class="subtle">Đây là phần thay thế cho "bảng GDV theo dự án" của dashboard VHM. VHM hỏi <i>mỗi ha đất bán được bao nhiêu tiền</i>; VRE phải hỏi <i>mỗi m² sàn tạo ra bao nhiêu tiền thuê mỗi tháng, và con số đó đang đi lên hay đi xuống</i>.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Chỉ tiêu năng suất</th><th>2025 (cả năm)</th><th>Q2/2026 quy năm</th><th>Cách tính</th><th>Độ tin cậy</th></tr></thead>
+    <tbody>
+      <tr><td><b>Doanh thu cho thuê / m² GFA / tháng</b></td><td>~308.000 đ</td><td><b>~395.000 đ</b></td><td>DT cho thuê ÷ GFA ÷ 12. 2025 dùng ~80% × 8.837 tỷ; Q2/26 dùng 2.268 tỷ × 4</td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>Doanh thu / m² <i>đã lấp đầy</i> / tháng</b></td><td>~349.000 đ</td><td><b>~446.000 đ</b></td><td>Dòng trên ÷ tỷ lệ lấp đầy (88,1% và 88,6%)</td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>EBITDA / m² GFA / năm</b></td><td>~2,76 tr đ</td><td>—</td><td>EBITDA 5.274 tỷ ÷ 1.914.400 m²</td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>Lượt khách / m² GFA / năm</b></td><td>~110 lượt</td><td>~117 lượt</td><td>210 tr lượt ÷ GFA; 6T26: 112 tr × 2 ÷ GFA</td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>Doanh thu cho thuê / lượt khách</b></td><td>~33.700 đ</td><td><b>~40.500 đ</b></td><td>DT cho thuê ÷ số lượt khách</td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>Giá thuê thị trường tham chiếu (tầng trệt)</b></td><td colspan="2">HCM ~1,36 tr đ/m²/th · HN ~1,30 tr đ/m²/th · CBD HN ~172 USD/m²/th</td><td>CBRE, Savills, Cushman &amp; Wakefield Q4/2025</td><td><span class="tag t2">TIER 2</span></td></tr>
+    </tbody></table></div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><div class="note g" style="margin:0"><b>Kiểm tra chéo: con số ~446.000 đ/m²/tháng có hợp lý không?</b> Thoạt nhìn nó chỉ bằng một phần ba giá thuê tầng trệt bình quân thị trường (1,30–1,36 tr đ/m²/th) — có vẻ quá thấp. Nhưng hai điều chỉnh làm nó khớp lại: <b>(1) GFA không phải diện tích cho thuê.</b> GFA gồm hành lang, sảnh, hầm gửi xe, khu kỹ thuật; diện tích cho thuê thuần (NLA) thường chỉ chiếm 55–65% GFA. Quy về NLA, con số thành <b>~690.000–810.000 đ/m²/tháng</b>. <b>(2) Giá thuê thị trường được trích dẫn là giá tầng trệt</b> — tầng 2 trở lên thường chỉ bằng 40–60% tầng trệt, mà TTTM 4–5 tầng thì phần lớn diện tích nằm ở tầng trên. Sau hai điều chỉnh này, mức của VRE nằm trong dải hợp lý. <b>Bài kiểm tra đã qua</b> — nhưng nó cũng cho thấy vì sao không thể so trực tiếp doanh thu/m² của VRE với giá thuê trên báo.</div></div>
+    <div class="card"><div class="note" style="margin:0"><b>Điều con số này thực sự nói.</b> Doanh thu cho thuê trên mỗi m² GFA tăng từ ~308.000đ (2025) lên ~395.000đ (Q2/26 quy năm) — <b>+28%</b>. Nhưng phải cẩn thận: mẫu số GFA tôi dùng là số cuối 2025 (1.914.400 m²) trong khi tử số Q2/26 đã bao gồm đóng góp cả năm của các TTTM mở giữa 2025. Phần lớn mức tăng này là <b>hiệu ứng đầy đủ kỳ của Ocean City và Royal Island</b>, không phải giá thuê tăng 28%. Cách đọc đúng: VRE công bố doanh thu cho thuê +9,7% YoY trong Q2 với lấp đầy +2,3 điểm % — nghĩa là <b>phần tăng giá thuê thuần chỉ khoảng 5–7%/năm</b>, đúng bằng mức TCBS giả định. Đây là ví dụ vì sao một tỷ số tự tính có thể nói dối nếu tử số và mẫu số lệch kỳ.</div></div>
+  </div>
+
+  <h2 class="sec">Ba câu hỏi tab này trả lời được — và một câu không</h2>
+  <div class="card">
+    <div class="q"><div class="n g">✓</div><div><h4>VRE đang sở hữu những tài sản nào?</h4><p>91 TTTM, ~1,94 triệu m² GFA, 31/34 tỉnh thành, chia bốn mô hình với đặc tính kinh tế hoàn toàn khác nhau. Trả lời được đầy đủ từ công bố của doanh nghiệp.</p></div></div>
+    <div class="q"><div class="n g">✓</div><div><h4>Tài sản nào còn dư địa lấp đầy?</h4><p>Trả lời được ở cấp <i>mô hình</i>: ~68% diện tích trống nằm ở Vincom Plaza, ~6,5% ở Vincom+. Vincom Center và Mega Mall đã gần kín.</p></div></div>
+    <div class="q"><div class="n y">~</div><div><h4>Tài sản nào tạo ra lợi nhuận chính?</h4><p>Chỉ suy luận được gián tiếp: Mega Mall + Center chiếm 46,6% GFA nhưng có lấp đầy và giá thuê cao hơn hẳn, nên nhiều khả năng đóng góp <b>trên 60% doanh thu cho thuê</b>. Đây là <b>ước tính của tôi</b>, không có số liệu xác nhận.</p></div></div>
+    <div class="q"><div class="n r">✗</div><div><h4>Từng TTTM cụ thể đóng góp bao nhiêu doanh thu và NOI?</h4><p><b>Không thể biết.</b> VRE không công bố doanh thu, NOI, giá thuê hay lưu lượng khách theo từng trung tâm — kể cả cho các Mega Mall quan trọng nhất. Mọi mô hình định giá theo từng tài sản (asset-level NAV) cho VRE đều đang đứng trên giả định, không phải dữ liệu. Cách thay thế duy nhất là dùng proxy cấp mô hình như tab này làm, và chấp nhận sai số.</p></div></div>
+  </div>
+</section>
+
+<!-- ============ 03 CỖ MÁY CHO THUÊ ============ -->
+<section id="en" class="tab">
+  <h2 class="sec">Cỗ máy cho thuê · phân rã doanh thu thành các biến có thể theo dõi</h2>
+  <p class="subtle">Doanh thu cho thuê của VRE là tích của bốn biến. Mỗi biến có nguồn dữ liệu riêng, tần suất riêng và độ tin cậy riêng — tách ra rồi mới biết tăng trưởng đến từ đâu.</p>
+  <div class="flow">
+    <div class="n"><small>Diện tích sàn</small><b>1,94 tr m²</b><small>GFA · +27k Đan Phượng</small></div><span class="a">×</span>
+    <div class="n"><small>Tỷ lệ lấp đầy</small><b>88,6%</b><small>+2,3 đ% YoY · −0,3 đ% QoQ</small></div><span class="a">×</span>
+    <div class="n"><small>Giá thuê / m²</small><b>~446k đ/th</b><small>trên m² đã lấp · ước tính</small></div><span class="a">×</span>
+    <div class="n"><small>Hệ số quy đổi</small><b>12 tháng</b><small></small></div><span class="a">=</span>
+    <div class="n hi"><small>DT cho thuê Q2 quy năm</small><b>~9.072 tỷ</b><small>Q2 thực: 2.268 tỷ (+9,7%)</small></div>
+  </div>
+  <div class="note"><b>Vì sao phải phân rã như thế này.</b> Doanh thu cho thuê Q2/2026 tăng 9,7% — nhưng bốn biến trên đóng góp rất khác nhau: diện tích tăng (nhờ các TTTM mở giữa 2025 nay chạy đủ kỳ), lấp đầy tăng 2,3 điểm % (≈ +2,6% doanh thu), phần còn lại mới là giá thuê. Nếu năm sau không mở TTTM mới và lấp đầy chạm trần, <b>toàn bộ tăng trưởng sẽ phải đến từ một biến duy nhất là giá thuê</b> — biến mà VRE có ít quyền kiểm soát nhất vì nó phụ thuộc sức khỏe của khách thuê. Đó là lý do tab 06 (pipeline) và tab 07 (cạnh tranh) quan trọng hơn vẻ ngoài của chúng.</div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Tỷ lệ lấp đầy toàn hệ thống theo quý</div>
+      <div class="chartbox"><canvas id="cOcc"></canvas></div>
+      <div class="mini" style="margin-top:8px">Xu hướng cải thiện liên tục từ 82,8% (Q1/2024) lên 88,9% (Q1/2026) là thành tích vận hành thật. Nhưng <b>Q2/2026 giảm nhẹ về 88,6%</b> — lần chững đầu tiên sau tám quý. TCBS ghi nhận nguồn cung bán lẻ Hà Nội tăng thêm ~58.000 m² trong quý. Một quý chưa thành xu hướng, nhưng đây là chỉ số cần theo dõi sát nhất trong Q3–Q4/2026. <span class="tag t1">TIER 1</span></div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Doanh thu &amp; biên lợi nhuận gộp theo quý</div>
+      <div class="chartbox"><canvas id="cRev"></canvas></div>
+      <div class="mini" style="margin-top:8px">Biên gộp mở rộng từ 50,5% (Q3/2025) lên <b>58,9% (Q2/2026)</b> — đây là bằng chứng rõ nhất về <b>đòn bẩy hoạt động dương</b>: chi phí vận hành TTTM gần như cố định, nên mỗi đồng doanh thu tăng thêm rơi phần lớn xuống lợi nhuận. Đây là phần "thật" nhất trong câu chuyện 2026 của VRE. <span class="tag t1">TIER 1</span></div>
+    </div>
+  </div>
+
+  <h2 class="sec">Lưu lượng khách · nơi con số tổng che mất con số quan trọng</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Lượt khách 2025</div><div class="val">~210 tr</div><div class="sub up">+21% YoY <span class="tag t1">T1</span></div></div>
+    <div class="card kpi"><div class="lab">Lượt khách 6T2026</div><div class="val">112 tr</div><div class="sub up">+11,6% YoY <span class="tag t1">T1</span></div></div>
+    <div class="card kpi"><div class="lab">Bình quân mỗi TTTM/năm</div><div class="val">~2,3 tr</div><div class="sub wn">Aeon: 6–10 tr lượt/điểm</div></div>
+    <div class="card kpi"><div class="lab">Traffic like-for-like</div><div class="val" style="font-size:19px;color:var(--mut)">Chưa công bố</div><div class="sub dn">Vùng mù lớn nhất của hồ sơ</div></div>
+  </div>
+  <div class="tw" style="margin-top:12px"><table>
+    <thead><tr><th>Mô hình</th><th>Số TTTM</th><th>GFA (m²)</th><th>% GFA</th><th>Tăng footfall 2025</th><th>Lấp đầy Q4/2025</th><th>Lấp đầy Q2/2026</th><th>Diện tích trống ước tính</th></tr></thead>
+    <tbody>
+      <tr><td><b>Vincom Center</b><div class="mini">Cao cấp · CBD</div></td><td>6</td><td>233.400</td><td>12,2%</td><td class="up">+21,5%</td><td>96–97%</td><td>~96%</td><td>~9.300 m²</td></tr>
+      <tr><td><b>Vincom Mega Mall</b><div class="mini">Đại đô thị Vinhomes</div></td><td>8</td><td>657.900</td><td>34,4%</td><td class="up">+19,2%</td><td>92,7%</td><td>~93%</td><td>~46.000 m²</td></tr>
+      <tr><td><b>Vincom Plaza</b><div class="mini">Tỉnh thành &amp; vệ tinh</div></td><td>61</td><td>951.100</td><td>49,7%</td><td class="up">+22,3%</td><td>84,1%</td><td>Chưa CB</td><td><b>~151.200 m²</b></td></tr>
+      <tr><td><b>Vincom+</b><div class="mini">Cộng đồng</div></td><td>15</td><td>72.000</td><td>3,8%</td><td class="up">+21,3%</td><td>80,2%</td><td>Chưa CB</td><td>~14.300 m²</td></tr>
+      <tr style="background:#eef1f8;font-weight:800"><td>TỔNG HỆ THỐNG</td><td>90</td><td>1.914.400</td><td>100%</td><td>+21,0%</td><td>88,1%</td><td>88,6%</td><td>~220.800 m²</td></tr>
+    </tbody></table></div>
+  <div class="note r"><b>Con số +21% đang che giấu điều gì.</b> Footfall tăng đều 19–22% ở cả bốn mô hình — thoạt nhìn là bằng chứng sức khỏe toàn diện. Nhưng TCBS chỉ rõ trong cùng báo cáo: mức tăng này <b>được dẫn dắt đáng kể bởi các TTTM mở mới</b> (Mega Mall Smart City, Ocean City 22/08/2025, Royal Island T10/2025), trong khi <b>nhiều Vincom Plaza tỉnh lẻ và một số Vincom Center cũ đang chịu sụt giảm khách</b> khi người tiêu dùng dịch chuyển sang Aeon Mall. Hai mệnh đề này chỉ cùng đúng nếu traffic của các trung tâm hiện hữu tăng chậm hơn nhiều so với 21% — hoặc giảm. <b>Không có số liệu like-for-like, không thể biết cái nào.</b> Đây là số liệu tôi sẽ hỏi đầu tiên nếu được gặp ban lãnh đạo.</div>
+
+  <h2 class="sec">Cơ cấu khách thuê · điều biết được và điều không</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Những gì VRE có công bố</div>
+      <div class="kv"><span>Số thương hiệu khách thuê</span><b>~1.000 trong &amp; ngoài nước</b></div>
+      <div class="kv"><span>Thương hiệu mới gia nhập 6T2026</span><b>~140</b></div>
+      <div class="kv"><span>Đóng góp của nhóm mới vào diện tích cho thuê mới</span><b>31%</b></div>
+      <div class="kv"><span>Định hướng tỷ trọng F&amp;B – giải trí – trải nghiệm</span><b>30–40% GLA</b></div>
+      <div class="kv"><span>Cơ chế giá thuê</span><b>Phí cố định + chia sẻ doanh thu</b></div>
+      <div class="kv"><span>Kỳ hạn hợp đồng điển hình</span><b>3–5 năm</b></div>
+      <div class="note g" style="margin-top:10px;font-size:11.5px"><b>Cơ chế phí kết hợp là điểm mạnh cấu trúc.</b> Phần cố định bảo đảm dòng tiền sàn; phần chia sẻ doanh thu khiến VRE hưởng lợi trực tiếp khi khách thuê bán tốt. Nó cũng có nghĩa: <b>doanh thu VRE là một hàm số của doanh thu bán lẻ toàn quốc</b>, chứ không chỉ của hợp đồng thuê. Tổng bán lẻ 2025 +9,2%, 6T2026 +7,3% — đây là biến vĩ mô cần theo dõi song song.</div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Những gì VRE <span style="color:var(--red)">không</span> công bố — và vì sao nó quan trọng</div>
+      <div class="kv"><span>Tỷ trọng thực tế F&amp;B / thời trang / giải trí / dịch vụ</span><b style="color:var(--red)">Chưa công bố</b></div>
+      <div class="kv"><span>Tỷ lệ khách thuê rời đi (tenant churn)</span><b style="color:var(--red)">Chưa công bố</b></div>
+      <div class="kv"><span>Lịch đáo hạn hợp đồng thuê theo năm</span><b style="color:var(--red)">Chưa công bố</b></div>
+      <div class="kv"><span>Mức tăng giá khi tái ký (rental reversion)</span><b style="color:var(--red)">Chưa công bố</b></div>
+      <div class="kv"><span>Doanh thu bán hàng của khách thuê (tenant sales)</span><b style="color:var(--red)">Chưa công bố</b></div>
+      <div class="kv"><span>Tỷ trọng khách thuê lớn nhất</span><b style="color:var(--red)">Chưa công bố</b></div>
+      <div class="note r" style="margin-top:10px;font-size:11.5px"><b>Lịch đáo hạn hợp đồng là khoảng trống nghiêm trọng nhất.</b> Với hợp đồng 3–5 năm, mỗi năm có khoảng 20–33% diện tích đến hạn tái ký. Nếu một tỷ trọng lớn rơi vào 2026–2027 — đúng lúc nguồn cung mới ở Hà Nội tăng và Aeon mở thêm điểm — thì rủi ro giá thuê là thật và tập trung. Các REIT niêm yết trong khu vực (CapitaLand, Central Pattana) đều công bố bảng này theo quý. <b>Việc VRE không công bố là một khoảng cách về chuẩn mực minh bạch so với chính nhóm peer mà thị trường dùng để định giá nó.</b></div>
+    </div>
+  </div>
+
+  <h2 class="sec">Bối cảnh ngành · nền của mọi giả định tăng giá thuê</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Tổng bán lẻ HH &amp; DV 2025</div><div class="val">7.009</div><div class="sub up">nghìn tỷ · +9,2% <span class="tag t2">GSO</span></div></div>
+    <div class="card kpi"><div class="lab">Bán lẻ hiện đại / tổng</div><div class="val">27%</div><div class="sub">2024 · từ 15% năm 2005</div></div>
+    <div class="card kpi"><div class="lab">Thương mại điện tử 2025</div><div class="val">~12%</div><div class="sub wn">~32 tỷ USD · tăng &gt;20%/năm</div></div>
+    <div class="card kpi"><div class="lab">Nguồn cung mới 2026–2028</div><div class="val">~495k</div><div class="sub">m² · HN ~330k + HCM ~165k</div></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><div class="note g" style="margin:0"><b>Nền cầu vẫn thuận.</b> GDP 2025 +8,02% (cao nhất từ 2011), 6T2026 +8,2%; bán lẻ 6T2026 +7,3%. Bán lẻ hiện đại mới chiếm 27% tổng bán lẻ — cả nước vẫn còn 8.274 chợ truyền thống so với 276 TTTM và 1.293 siêu thị. Tỷ lệ đô thị hóa hướng tới 44–50% năm 2030; tầng lớp tiêu dùng dự báo tăng từ ~40% lên ~75% dân số. Đáng chú ý với VRE: hộ trung lưu ở các thành phố nhỏ (Cần Thơ, Đà Nẵng, Hải Phòng) tăng ~8%/năm, nhanh hơn Hà Nội và TP.HCM (~5%) — <b>đúng phân khúc mà 61 Vincom Plaza nhắm tới</b>.</div></div>
+    <div class="card"><div class="note y" style="margin:0"><b>Nhưng có một mâu thuẫn số liệu cần ghi nhận.</b> Trong cùng một báo cáo TCBS, phần phân tích ngành ghi thương mại điện tử chiếm <b>~12% tổng bán lẻ, tăng &gt;20%/năm</b>; phần rủi ro lại ghi <b>~20% tổng bán lẻ, tăng ~25%/năm</b>. Hai con số này chênh nhau gần gấp đôi và không thể cùng đúng. Tôi giữ mức ~12% (khớp với 32 tỷ USD trên tổng bán lẻ ~7.009 nghìn tỷ ≈ 276 tỷ USD) và ghi rõ sự khác biệt, thay vì chọn một con số rồi trình bày như thể chắc chắn. <b>Khi hai nguồn mâu thuẫn, ghi lại mâu thuẫn là thông tin; chọn bừa một số là đánh mất thông tin.</b></div></div>
+  </div>
+</section>
+
+<!-- ============ 04 CHẤT LƯỢNG LỢI NHUẬN ============ -->
+<section id="qe" class="tab">
+  <h2 class="sec">Từ doanh thu tới lợi nhuận · bốn lớp có chất lượng hoàn toàn khác nhau</h2>
+  <p class="subtle">Đây là tab quan trọng nhất của dashboard. Với VHM, câu hỏi là "bao nhiêu lợi nhuận đến từ bán sỉ". Với VRE, câu hỏi tương đương là: <b>bao nhiêu lợi nhuận đến từ việc cho thuê mặt bằng, và bao nhiêu đến từ lãi tiền gửi, lãi cọc và bán tài sản?</b></p>
+
+  <div class="flow">
+    <div class="n"><small>Tổng doanh thu Q2/26</small><b>2.374 tỷ</b><small>+10,8% YoY</small></div><span class="a">→</span>
+    <div class="n"><small>Lợi nhuận gộp</small><b>1.398 tỷ</b><small>biên 58,9% · +18,3%</small></div><span class="a">→</span>
+    <div class="n hi"><small>+ LN hoạt động tài chính</small><b>625 tỷ</b><small>+53,2% · ~31% LNTT</small></div><span class="a">→</span>
+    <div class="n"><small>Lợi nhuận trước thuế</small><b>1.996 tỷ</b><small>+29,2%</small></div><span class="a">→</span>
+    <div class="n"><small>Lợi nhuận sau thuế</small><b>1.609 tỷ</b><small>+30,4% · EPS 708đ</small></div>
+  </div>
+
+  <h2 class="sec">Bóc tách LNTT 2025 · vì sao con số 8.083 tỷ gây hiểu nhầm</h2>
+  <div class="wf" style="grid-template-columns:repeat(4,1fr)">
+    <div class="s"><small>Lợi nhuận từ hoạt động cho thuê</small><b style="color:#1d6b3a">3.893</b><small>tỷ đồng · +3,2% YoY · <b>ĐỊNH KỲ, BỀN VỮNG</b></small></div>
+    <div class="s"><small>+ Thu nhập tài chính định kỳ</small><b style="color:#7a4a05">~2.290</b><small>tỷ · lãi tiền gửi &amp; lãi cọc · <b>THẬT NHƯNG PHỤ THUỘC LÃI SUẤT</b></small></div>
+    <div class="s"><small>+ Lãi bất thường Nguyễn Chí Thanh</small><b style="color:var(--red)">~1.900</b><small>tỷ · Q4/2025 · <b>MỘT LẦN, KHÔNG LẶP LẠI</b></small></div>
+    <div class="s"><small>= LNTT báo cáo 2025</small><b>8.083</b><small>tỷ · +57,5% YoY · <b>CON SỐ TRÊN BÁO</b></small></div>
+  </div>
+  <div class="note r"><b>Cách một khoản lãi bất thường làm méo cả năm.</b> Cuối tháng 10/2025, VRE chuyển nhượng 99,99% vốn tại công ty sở hữu <b>Vincom Center Nguyễn Chí Thanh</b> (Hà Nội) cho Công ty Bảo Quân với giá <b>3.630 tỷ đồng</b>, ghi nhận lãi ~1.900 tỷ trong Q4/2025. Kết quả: LNTT riêng Q4/2025 vọt lên <b>3.341 tỷ</b> trong khi <b>lợi nhuận từ hoạt động chỉ 847 tỷ</b> — tức khoản bất thường lớn gấp bốn lần lợi nhuận vận hành của cả quý. Doanh thu hoạt động tài chính Q4/2025 đạt 2.647 tỷ, gấp 4,8 lần cùng kỳ.<br><br><b>Hệ quả kéo dài sang 2026.</b> Nền so sánh 2025 đã bị đẩy lên rất cao, nên mọi so sánh YoY trong 2026 — nhất là Q4 — sẽ trông xấu đi dù hoạt động lõi vẫn tốt lên. Ngược lại, P/E tính trên EPS 2025 sẽ trông rẻ một cách giả tạo. <b>Đây là lý do TCBS dự phóng LNST 2026 ~6.065 tỷ, tức <i>giảm</i> 6% so với 2025, dù họ mô tả lợi nhuận lõi "vẫn trên đà tăng hai chữ số".</b> Hai điều đó chỉ mâu thuẫn nếu người đọc quên tách lớp.</div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Lợi nhuận lõi so với lợi nhuận báo cáo</div>
+      <div class="chartbox"><canvas id="cCore"></canvas></div>
+      <div class="mini" style="margin-top:8px">Khoảng cách giữa hai đường chính là phần lợi nhuận <b>không đến từ việc cho thuê mặt bằng</b>. Nó nới rộng liên tục và đạt đỉnh năm 2025. Nếu chỉ nhìn đường trên (báo cáo), VRE trông như một doanh nghiệp tăng trưởng 57%; nhìn đường dưới (lõi), đó là một doanh nghiệp tăng trưởng 3%. Cả hai đều đúng — nhưng chỉ một trong hai là điều nhà đầu tư đang thực sự mua. <span class="tag t3">TCBS · BCTC kiểm toán</span></div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">LNST theo quý · Q4/2025 là ngoại lệ</div>
+      <div class="chartbox"><canvas id="cQtr"></canvas></div>
+      <div class="mini" style="margin-top:8px">Bỏ cột Q4/2025 ra, xu hướng lợi nhuận theo quý là một đường đi lên rất đều: 1.233 → 1.376 → 1.606 → 1.609 tỷ. Đó mới là nhịp thật của doanh nghiệp. Lưu ý Q1/2026 (1.606 tỷ) còn chứa <b>~185 tỷ lãi bán một tài sản không cốt lõi</b>, nên <b>Q2/2026 thực chất là quý "sạch" nhất</b> trong năm — và nó vẫn đạt 1.609 tỷ. <span class="tag t1">TIER 1</span></div>
+    </div>
+  </div>
+
+  <h2 class="sec">Lợi nhuận tài chính · khoản mục cần soi kỹ nhất trong 2026</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">LN hoạt động tài chính Q2/26</div><div class="val">625</div><div class="sub up">+53,2% YoY · tỷ đồng</div></div>
+    <div class="card kpi"><div class="lab">Tỷ trọng trong LNTT Q2</div><div class="val wn">~31%</div><div class="sub">Gần một phần ba lợi nhuận</div></div>
+    <div class="card kpi"><div class="lab">Số dư tiền &amp; tiền gửi 30/06</div><div class="val">5.843</div><div class="sub">tỷ đồng — không đủ tạo ra 625 tỷ/quý</div></div>
+    <div class="card kpi"><div class="lab">Nguồn còn lại</div><div class="val" style="font-size:17px">Lãi cọc dự án</div><div class="sub dn">Từ các khoản đặt cọc trong hệ sinh thái</div></div>
+  </div>
+  <div class="note y"><b>Một phép tính đơn giản chỉ ra vấn đề.</b> Lợi nhuận tài chính Q2/2026 đạt 625 tỷ. Nếu toàn bộ đến từ lãi tiền gửi trên số dư 5.843 tỷ, lãi suất ngụ ý sẽ là <b>625 × 4 ÷ 5.843 ≈ 43%/năm</b> — bất khả thi. Với mặt bằng lãi suất tiền gửi thực tế (~4,5–6%/năm), số dư 5.843 tỷ chỉ tạo ra khoảng <b>65–88 tỷ mỗi quý</b>. Nghĩa là <b>85–90% khoản lợi nhuận tài chính này đến từ nguồn khác</b> — và TCBS nêu rõ đó là <i>"lãi cọc từ các dự án đặt cọc nửa cuối 2025"</i>.<br><br>Nói thẳng ra: <b>một phần đáng kể lợi nhuận của VRE đang đến từ tiền lãi mà Vingroup và Vinhomes trả cho VRE trên các khoản VRE đã đặt cọc cho họ.</b> Đó là lợi nhuận thật về mặt kế toán, nhưng nó không phải lợi nhuận từ việc cho thuê mặt bằng, và nó phụ thuộc vào ba thứ nằm ngoài tầm kiểm soát của VRE: quy mô số dư đặt cọc, lãi suất áp dụng, và <b>khả năng chi trả của bên liên quan</b>. <span class="tag t3">Suy luận của tôi từ số liệu TCBS &amp; BCTC</span></div>
+
+  <h2 class="sec">Bảng lịch sử · để nhìn thấy hình dạng thật của doanh nghiệp</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Chỉ tiêu (tỷ đồng)</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th><th>6T2026</th><th>Ghi chú</th></tr></thead>
+    <tbody>
+      <tr><td><b>Doanh thu thuần</b></td><td>5.891</td><td>7.361</td><td>9.791</td><td>8.939</td><td>8.837</td><td>4.667</td><td class="mini">Đỉnh 2023 có đóng góp lớn từ bàn giao shophouse</td></tr>
+      <tr><td>Tăng trưởng DT</td><td>—</td><td class="up">+25%</td><td class="up">+33%</td><td class="dn">−9%</td><td class="dn">−1%</td><td class="up">+9,2%</td><td class="mini">Ba năm doanh thu đi ngang/giảm</td></tr>
+      <tr><td><b>Biên lợi nhuận gộp</b></td><td>41%</td><td>52%</td><td>55%</td><td>53%</td><td>54%</td><td><b>56,9%</b></td><td class="mini">Đáy 40,6% năm 2021 do COVID</td></tr>
+      <tr><td><b>EBITDA</b></td><td>3.250</td><td>4.725</td><td>6.020</td><td>5.152</td><td>5.274</td><td>—</td><td class="mini">Vẫn thấp hơn đỉnh 2023</td></tr>
+      <tr><td><b>LN hoạt động (lõi)</b></td><td class="mini">—</td><td class="mini">—</td><td class="mini">—</td><td>3.773</td><td><b>3.893</b></td><td class="mini">—</td><td class="mini">Chỉ +3,2% trong năm "kỷ lục"</td></tr>
+      <tr><td><b>LNST báo cáo</b></td><td>1.315</td><td>2.776</td><td>4.409</td><td>4.096</td><td><b>6.446</b></td><td>3.215</td><td class="mini">2025 chứa ~1.900 tỷ bất thường</td></tr>
+      <tr><td><b>LNST chuẩn hóa (ước)</b></td><td>1.315</td><td>2.776</td><td>4.409</td><td>4.096</td><td class="wn">~4.500–5.000</td><td class="wn">~3.030</td><td class="mini">Loại lãi bán tài sản <span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>ROE báo cáo</b></td><td>4%</td><td>9%</td><td>12%</td><td>10%</td><td>14,3%</td><td>14,7%</td><td class="mini">ROE lõi từ cho thuê ước chỉ 8–9%</td></tr>
+      <tr><td><b>Tổng tài sản</b></td><td>37.873</td><td>42.701</td><td>47.654</td><td>55.226</td><td>61.279</td><td>62.806</td><td class="mini">Tăng đều dù doanh thu đi ngang</td></tr>
+      <tr><td><b>Vốn chủ sở hữu</b></td><td>30.651</td><td>33.425</td><td>37.827</td><td>41.923</td><td>48.368</td><td>49.311</td><td class="mini">79% tổng nguồn vốn</td></tr>
+      <tr><td><b>Dòng tiền tự do (FCF)</b></td><td class="up">972</td><td class="up">2.708</td><td class="dn">−3.686</td><td class="dn">−1.378</td><td class="dn">−1.546</td><td class="mini">—</td><td class="mini"><b>Âm ba năm liên tiếp</b></td></tr>
+    </tbody></table></div>
+  <div class="note"><b>Điều bảng này nói khi đọc theo chiều ngang.</b> Doanh thu 2025 thấp hơn 2023. EBITDA 2025 thấp hơn 2023. Lợi nhuận lõi 2025 chỉ hơn 2024 đúng 3,2%. Nhưng tổng tài sản đã tăng từ 47.654 lên 61.279 tỷ (+28,6%) và vốn chủ tăng từ 37.827 lên 48.368 tỷ (+27,9%) trong cùng hai năm đó. <b>Nghĩa là VRE đang bơm vốn vào bảng cân đối nhanh hơn nhiều so với tốc độ vốn đó tạo ra doanh thu.</b> Với một doanh nghiệp đang trong chu kỳ đầu tư, điều đó bình thường — miễn là phần vốn tăng thêm sẽ biến thành mặt bằng cho thuê. Câu hỏi cả hồ sơ đầu tư xoay quanh: <b>phần vốn đó đang nằm ở đâu, và bao giờ nó thành trung tâm thương mại?</b> Tab tiếp theo trả lời.</div>
+</section>
+
+<!-- ============ 05 ĐẶT CỌC & HỆ SINH THÁI VIN ============ -->
+<section id="dp" class="tab">
+  <h2 class="sec">Khoản mục quyết định · tiền đặt cọc cho Vingroup và Vinhomes</h2>
+  <p class="subtle">Đề xuất khung ban đầu tách "Growth Pipeline" và "Vin Ecosystem Impact" thành hai tab riêng. Với VRE, đó là một sai lầm về cấu trúc: <b>pipeline tăng trưởng và rủi ro bên liên quan là cùng một dòng trên bảng cân đối</b>. Không thể phân tích cái này mà không phân tích cái kia.</p>
+
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Số dư đặt cọc cuối 2025</div><div class="val dn">~24.895</div><div class="sub">tỷ đồng <span class="tag t4">TIER 4 · cần xác minh</span></div></div>
+    <div class="card kpi"><div class="lab">Trong đó: giữ chỗ mặt bằng TTTM</div><div class="val">14.512</div><div class="sub">tỷ · cho <b>764.000 m²</b> sàn tương lai</div></div>
+    <div class="card kpi"><div class="lab">So với vốn chủ sở hữu</div><div class="val dn">~51%</div><div class="sub">24.895 / 48.368 tỷ</div></div>
+    <div class="card kpi"><div class="lab">So với tổng tài sản</div><div class="val dn">~41%</div><div class="sub">24.895 / 61.279 tỷ</div></div>
+  </div>
+
+  <h2 class="sec">Diễn biến số dư · và vì sao tôi trình bày nó dưới dạng dải chứ không phải một con số</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Thời điểm</th><th>Số dư ghi nhận</th><th>Cấu phần</th><th>Nguồn</th><th>Tier</th></tr></thead>
+    <tbody>
+      <tr><td><b>30/09/2024</b></td><td>14.220 tỷ</td><td>11.180 tỷ tiền gửi dài hạn phát triển TTTM tại dự án nhà ở VIC/VHM theo hợp đồng hợp tác kinh doanh (BCC) + 3.040 tỷ đặt cọc cho VIC và VHM cho cấu phần thương mại dịch vụ</td><td>Tổng hợp báo chí tài chính từ BCTC</td><td><span class="tag t4">T4</span></td></tr>
+      <tr><td><b>30/06/2025</b></td><td>16.160 tỷ</td><td>5.590 tỷ đặt cọc ngắn hạn + 10.573 tỷ đặt cọc dài hạn. Các dự án được nêu tên: Vinhomes Royal Island (Hải Phòng), Vinhomes Golden Avenue (Quảng Ninh), Vinhomes Green Paradise (Cần Giờ)</td><td>BCTC Q2/2025 của <b>Vingroup</b>, công bố 07/08/2025</td><td><span class="tag t4">T4</span></td></tr>
+      <tr><td><b>31/12/2025</b></td><td>~24.895 tỷ</td><td>Trong đó <b>14.512 tỷ cho 764.000 m² sàn TTTM</b>; phần còn lại gồm đặt cọc mua shophouse và các cấu phần khác</td><td>Tổng hợp báo chí tài chính từ BCTC</td><td><span class="tag t4">T4</span></td></tr>
+      <tr><td><b>03/10/2025 (góc nhìn CTCK)</b></td><td class="mini">Không nêu số dư</td><td>MBS mô tả: VRE đã đặt cọc với VIC/VHM để đảm bảo quỹ đất phát triển TTTM với tổng <b>GFA 800.000 m²</b>, bao gồm cả các TTTM mở mới 2025 (~120.000 m²)</td><td>MBS Research · Báo cáo cổ phiếu VRE</td><td><span class="tag t3">T3</span></td></tr>
+      <tr style="background:#fdf6e7"><td><b>30/06/2026</b></td><td><b style="color:var(--red)">Chưa xác minh được</b></td><td>BCTC bán niên 2026 chưa được soát xét công bố công khai đầy đủ ở thời điểm lập dashboard. Suy ra gián tiếp: tổng tài sản 62.806 tỷ − BĐS đầu tư 35.559 tỷ − tiền &amp; tiền gửi 5.843 tỷ = <b>~21.404 tỷ "tài sản khác"</b>, trong đó có phải thu, tồn kho, TSCĐ và các khoản đặt cọc</td><td>Tính toán của tôi từ số liệu công bố</td><td><span class="tag t3">Suy luận</span></td></tr>
+    </tbody></table></div>
+
+  <div class="note r"><b>Một mâu thuẫn số học tôi không thể giải, và sẽ không lấp bằng phỏng đoán.</b> Cuối 2025, tổng tài sản là 61.279 tỷ, trong đó BĐS đầu tư &amp; đang xây dựng 33.781 tỷ và tiền &amp; tiền gửi 4.568 tỷ. Phần "tài sản khác" còn lại chỉ khoảng <b>22.930 tỷ</b> — và khối này còn phải chứa phải thu khách hàng (1.320 tỷ), hàng tồn kho (236 tỷ), tài sản cố định, lợi thế thương mại và các khoản khác. <b>Như vậy con số đặt cọc 24.895 tỷ không thể nằm trọn trong bảng cân đối theo cách hiểu thông thường.</b><br><br>Ba khả năng: (1) con số 24.895 tỷ là <i>tổng giá trị cam kết</i> chứ không phải số dư đã giải ngân; (2) một phần đã được chuyển thành chi phí xây dựng cơ bản dở dang và nằm trong 33.781 tỷ BĐS đầu tư; (3) con số từ nguồn thứ cấp bị sai hoặc gộp nhầm kỳ. <b>Tôi không biết đáp án nào đúng, và việc chọn bừa một đáp án sẽ làm hỏng toàn bộ mô hình định giá ở tab 09.</b> Đây là <b>hạng mục số một cần kiểm chứng</b> khi BCTC bán niên 2026 soát xét được công bố — cụ thể là thuyết minh "Tài sản dài hạn khác" và thuyết minh "Giao dịch với các bên liên quan". Cho tới lúc đó, mọi con số đặt cọc trên dashboard này đều mang nhãn <span class="tag t4">TIER 4</span>.</div>
+
+  <h2 class="sec">Kiểm tra tính hợp lý · 14.512 tỷ cho 764.000 m² có phải là giá tốt?</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Phép so sánh đơn vị</div>
+      <div class="kv"><span>Tiền đặt cọc cho mặt bằng tương lai</span><b>14.512 tỷ đồng</b></div>
+      <div class="kv"><span>Diện tích sàn tương ứng</span><b>764.000 m²</b></div>
+      <div class="kv"><span>⇒ Đơn giá ngụ ý</span><b style="color:var(--navy)">~19,0 triệu đ/m²</b></div>
+      <div class="kv" style="margin-top:8px"><span>BĐS đầu tư trên sổ cuối 2025</span><b>33.781 tỷ đồng</b></div>
+      <div class="kv"><span>GFA đang vận hành</span><b>1.914.400 m²</b></div>
+      <div class="kv"><span>⇒ Giá trị sổ sách mỗi m² (đã khấu hao)</span><b style="color:var(--navy)">~17,6 triệu đ/m²</b></div>
+      <div class="note g" style="margin-top:10px;font-size:11.5px"><b>Bài kiểm tra này qua được.</b> VRE đang trả ~19,0 tr đ/m² cho mặt bằng tương lai, so với giá trị sổ sách ~17,6 tr đ/m² của danh mục hiện hữu <i>đã trừ khấu hao lũy kế</i>. Nếu cộng lại khấu hao, nguyên giá mỗi m² của danh mục cũ nhiều khả năng còn cao hơn 19 tr. Nghĩa là <b>mức giá đặt cọc không có dấu hiệu bất thường theo hướng bất lợi cho VRE</b> — ít nhất ở cấp độ đơn giá gộp. <span class="tag t3">Tính toán của tôi</span></div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Nhưng phép so sánh này chưa đủ · bốn điều nó không kiểm tra được</div>
+      <p style="font-size:12px;margin:0 0 8px"><b>Một, vị trí.</b> 19 tr đ/m² cho mặt bằng ở một đại đô thị ngoại ô rất khác 19 tr đ/m² cho mặt bằng ở lõi đô thị. Không có phân bổ theo dự án nên không kiểm tra được.</p>
+      <p style="font-size:12px;margin:0 0 8px"><b>Hai, thời điểm bàn giao.</b> Tiền đã trả hôm nay; mặt bằng nhận năm nào? Mỗi năm chậm là một năm chi phí cơ hội. Với chi phí vốn ~10,7% (giả định MBS), 14.512 tỷ nằm không mất khoảng <b>1.550 tỷ giá trị mỗi năm</b> — trừ đi phần lãi cọc được nhận.</p>
+      <p style="font-size:12px;margin:0 0 8px"><b>Ba, lãi suất cọc.</b> VRE nhận lãi trên khoản này (đó là nguồn chính của 625 tỷ lợi nhuận tài chính Q2). Nhưng <b>mức lãi suất chưa từng được công bố</b>. Nếu thấp hơn chi phí vốn, khoản cọc đang phá hủy giá trị dù vẫn tạo ra "lợi nhuận" trên báo cáo.</p>
+      <p style="font-size:12px;margin:0"><b>Bốn, điều kiện hoàn trả.</b> Nếu một dự án Vinhomes chậm hoặc không triển khai, VRE có được hoàn cọc không, trong bao lâu, và có bảo đảm gì? Đây là điều khoản quan trọng nhất và <b>hoàn toàn không có thông tin công khai</b>.</p>
+    </div>
+  </div>
+
+  <h2 class="sec">Cấu trúc sở hữu · nghịch lý trung tâm của hồ sơ VRE</h2>
+  <div class="grid g21">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Cơ cấu cổ đông (06/2026)</div>
+      <div class="chartbox sm"><canvas id="cOwn"></canvas></div>
+      <div class="mini" style="margin-top:8px">Sado 40,5% · Vingroup 18,4% · cổ đông khác 28,8% · cổ đông ngoại 12,3%. Room ngoại tối đa 49%, hiện mới dùng ~11–12% — còn dư địa rất rộng. <b>Sado</b> có ông <b>Nguyễn Hoài Nam</b> nắm 90%; ông Nam đồng thời là <b>Tổng Giám đốc Berjaya Việt Nam</b> (thuộc tập đoàn Berjaya Corporation Berhad, Malaysia) và là thành viên HĐQT VRE. <span class="tag t3">TCBS/MBS</span></div>
+    </div>
+    <div class="card">
+      <div class="note p" style="margin:0 0 10px"><b>Nghịch lý cần gọi tên.</b> Từ tháng 4/2024, Vingroup đã bán 100% vốn tại SDI và <b>VRE không còn là công ty con của Vingroup</b> — Vingroup đã nhận đủ 1,54 tỷ USD từ thương vụ này và hiện chỉ còn giữ trực tiếp 18,4%, đứng sau Sado (40,5%). Trên giấy tờ, đây là một doanh nghiệp độc lập.<br><br>Nhưng nhìn vào bảng cân đối: <b>~41% tổng tài sản là tiền đặt cọc cho chính Vingroup và Vinhomes</b>, ~90% pipeline mở mới gắn với các đại đô thị Vinhomes, và một phần lớn lợi nhuận tài chính là lãi mà nhóm này trả cho VRE. <b>VRE đã tách khỏi Vingroup về mặt sở hữu nhưng chưa tách về mặt kinh tế</b> — và đó là một trạng thái ít gặp: cổ đông thiểu số không còn được bảo vệ bởi cơ chế công ty mẹ – công ty con, trong khi mức độ phụ thuộc kinh tế thì gần như không đổi.</div>
+      <div class="tw"><table style="min-width:auto">
+        <thead><tr><th>Sợi dây liên kết</th><th>Chiều tác động</th></tr></thead>
+        <tbody>
+          <tr><td><b>Đặt cọc &amp; BCC với VIC/VHM</b><div class="mini">~14.500–24.900 tỷ</div></td><td><span class="tag t1">Tích cực</span> đảm bảo pipeline 764.000–800.000 m² · <span class="tag t4">Rủi ro</span> khóa vốn dài hạn, phụ thuộc tiến độ bên thứ ba</td></tr>
+          <tr><td><b>Lãi cọc &amp; lãi tiền gửi</b><div class="mini">625 tỷ trong Q2/2026</div></td><td><span class="tag t1">Tích cực</span> ~31% LNTT · <span class="tag t4">Rủi ro</span> chất lượng lợi nhuận thấp, phụ thuộc lãi suất &amp; khả năng chi trả</td></tr>
+          <tr><td><b>Mega Mall trong đại đô thị Vinhomes</b><div class="mini">8 TTTM · 34% GFA</div></td><td><span class="tag t1">Tích cực</span> traffic cư dân sẵn có, rút ngắn thời gian lấp đầy · <span class="tag t4">Rủi ro</span> tập trung địa lý &amp; phụ thuộc tốc độ bán nhà của VHM</td></tr>
+          <tr><td><b>Mua shophouse để bán lại</b><div class="mini">Royal Island 85.600 m², Golden Avenue 24.200 m²</div></td><td><span class="tag t1">Tích cực</span> nguồn lợi nhuận bổ sung · <span class="tag t4">Rủi ro</span> biến VRE thành nhà phát triển BĐS, khác hẳn hồ sơ landlord</td></tr>
+          <tr><td><b>Chuyển nhượng tài sản</b><div class="mini">Nguyễn Chí Thanh 3.630 tỷ</div></td><td><span class="tag t1">Tích cực</span> chứng minh giá trị ẩn &gt; sổ sách · <span class="tag t4">Rủi ro</span> nếu lặp lại đều đặn thì đó là bán tài sản để nuôi lợi nhuận</td></tr>
+        </tbody></table></div>
+    </div>
+  </div>
+
+  <div class="note y"><b>Điều tôi sẽ theo dõi chặt nhất.</b> Không phải quy mô khoản đặt cọc — mà là <b>tốc độ nó chuyển hóa thành bất động sản đầu tư</b>. Mỗi quý, so sánh mức tăng của khoản mục "BĐS đầu tư &amp; đang xây dựng" với mức giảm của khoản mục đặt cọc. Nếu đặt cọc tăng nhanh hơn BĐS đầu tư trong nhiều quý liên tiếp, nghĩa là tiền đang chảy ra mà mặt bằng chưa về — và câu chuyện "pipeline tăng trưởng" đang dần trở thành câu chuyện "cho bên liên quan vay vốn dài hạn". <b>Hai câu chuyện đó cần được định giá theo hai cách hoàn toàn khác nhau.</b> BĐS đầu tư đã tăng từ 21.446 tỷ (2023) → 27.340 (2024) → 33.781 (2025) → 35.559 tỷ (Q2/2026): tốc độ tăng đang <i>chậm lại rõ rệt</i> trong nửa đầu 2026 (+1.778 tỷ trong sáu tháng, so với +6.441 tỷ cả năm 2025). Đây là tín hiệu cần giải thích.</div>
+</section>
+
+<!-- ============ 06 PIPELINE ============ -->
+<section id="pl" class="tab">
+  <h2 class="sec">Pipeline 2026 – 2030 · dòng thời gian</h2>
+  <p class="subtle">Ba loại sự kiện được xếp trên ba làn khác nhau: <b>khai trương TTTM</b> (tăng GFA), <b>bàn giao shophouse</b> (doanh thu một lần), và <b>chuyển hóa khoản đặt cọc</b> thành tài sản vận hành. Phần có sọc chéo là <b>suy luận của tôi</b>, không phải lịch VRE công bố.</p>
+  <div class="gw"><div class="gt" id="gantt"></div>
+    <div class="gleg">
+      <span><i style="background:#5b9a1c"></i>Khai trương TTTM · tăng GFA</span>
+      <span><i style="background:#2E75B6"></i>Xây dựng / chuẩn bị</span>
+      <span><i style="background:#9E2FB0"></i>Bàn giao shophouse · doanh thu một lần</span>
+      <span><i style="background:#c98505"></i>Giải ngân &amp; chuyển hóa khoản đặt cọc</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#888 0 4px,#ccc 4px 8px)"></i>Suy luận của tôi · chưa có lịch công bố</span>
+      <span><i style="background:#D64545;width:3px"></i>Thời điểm chốt dữ liệu</span>
+    </div>
+  </div>
+
+  <h2 class="sec">Đọc dòng thời gian này ra được gì</h2>
+  <div class="grid g3">
+    <div class="card"><div class="note g" style="margin:0"><b>2026 là năm gần như không có tăng trưởng diện tích.</b> Chỉ một TTTM mở mới — Vincom Plaza Đan Phượng (28/08/2026, ~27.000 m², nằm trong Vinhomes Wonder City), tương đương <b>+1,4% GFA</b>. MBS nói thẳng trong dự phóng: "trong năm 2026, không có trung tâm thương mại mới nào được đưa vào dự báo; do đó GFA dự kiến giữ nguyên". Toàn bộ tăng trưởng doanh thu 2026 vì thế phải đến từ <b>hiệu ứng đầy đủ kỳ của các TTTM mở giữa 2025</b> cộng lấp đầy và giá thuê — chứ không phải mở rộng.</div></div>
+    <div class="card"><div class="note y" style="margin:0"><b>Pipeline thật nằm ở 2027–2028.</b> VRE công bố kế hoạch mở mới <b>~214.000 m² GFA (+11%)</b>, chủ yếu là các Vincom Mega Mall gắn với đại đô thị Vinhomes (Grand Park, Ocean Park, Smart City…), mỗi trung tâm 50.000–120.000 m², khai trương rải trong 2026–2028. Nhưng <b>VRE chưa công bố lịch khai trương cụ thể của từng trung tâm</b> — nên các thanh 2027–2028 trên biểu đồ là phân bổ đều theo suy luận, không phải lịch thật. Đây là điểm cần cập nhật ngay khi có CBTT.</div></div>
+    <div class="card"><div class="note r" style="margin:0"><b>Mảng shophouse đã trượt lịch — và đó là câu chuyện lớn nhất chưa được nói.</b> MBS (10/2025) dự phóng doanh thu 2026 đạt 13.759 tỷ nhờ bàn giao Royal Island và Golden Avenue. Kế hoạch ĐHĐCĐ (4/2026) của chính VRE chỉ đặt <b>413 tỷ cho mảng chuyển nhượng BĐS</b>. Chênh lệch ~3.600 tỷ. Nghĩa là catalyst chính của luận điểm KHẢ QUAN từ MBS <b>đã không xảy ra trong 2026</b> và bị đẩy sang 2027 hoặc muộn hơn.</div></div>
+  </div>
+
+  <h2 class="sec">Pipeline theo diện tích · và đóng góp EBITDA ước tính</h2>
+  <p class="subtle">Đề xuất khung ban đầu nêu đúng một câu hỏi mà hầu hết dashboard bỏ qua: <i>"không chỉ có bao nhiêu mall mới, mà mall mới đóng góp bao nhiêu EBITDA"</i>. Dưới đây là mô hình trả lời câu hỏi đó — với cảnh báo rõ về giả định.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Cấu phần pipeline</th><th>Diện tích (m² GFA)</th><th>Thời điểm</th><th>EBITDA tăng thêm khi chạy đủ (ước)</th><th>% EBITDA 2025</th><th>Độ tin cậy</th></tr></thead>
+    <tbody>
+      <tr><td><b>Vincom Plaza Đan Phượng</b><div class="mini">Vinhomes Wonder City, Hà Nội · lấp đầy 93% trước khai trương</div></td><td>~27.000</td><td>28/08/2026 <span class="tag t1">T1</span></td><td>~74 tỷ/năm</td><td>~1,4%</td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>Pipeline Mega Mall công bố</b><div class="mini">Grand Park, Ocean Park, Smart City… · 50.000–120.000 m²/điểm</div></td><td>~214.000</td><td>2026–2028 <span class="tag t1">T1</span></td><td><b>~590 tỷ/năm</b></td><td><b>~11,2%</b></td><td><span class="tag t3">Ước tính</span></td></tr>
+      <tr><td><b>Mặt bằng đã đặt cọc nhưng chưa vào pipeline công bố</b><div class="mini">764.000 m² đã trả 14.512 tỷ − phần đã nằm trong pipeline trên</div></td><td>~550.000</td><td class="dn">Chưa có lịch</td><td>~1.515 tỷ/năm</td><td>~28,7%</td><td><span class="tag t4">Rất thấp</span></td></tr>
+      <tr style="background:#eef1f8;font-weight:800"><td>TỔNG TIỀM NĂNG NẾU HOÀN TẤT</td><td>~791.000</td><td>2026 → sau 2030</td><td>~2.179 tỷ/năm</td><td>~41,3%</td><td><span class="tag t4">Chỉ dùng để xếp hạng</span></td></tr>
+    </tbody></table></div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Ba con số này được tính ra sao</div>
+      <p style="font-size:12px;margin:0 0 8px"><b>Đơn giá EBITDA/m².</b> EBITDA 2025 là 5.274 tỷ trên GFA 1.914.400 m² ⇒ <b>~2,755 triệu đ/m²/năm</b>. Tôi áp đơn giá này cho diện tích mới.</p>
+      <p style="font-size:12px;margin:0 0 8px"><b>Vì sao cách này có thể sai theo hướng thấp.</b> Pipeline gần như toàn bộ là Mega Mall — mô hình có lấp đầy (93%) và giá thuê cao hơn bình quân hệ thống. Đơn giá thật nhiều khả năng cao hơn 2,755 tr/m².</p>
+      <p style="font-size:12px;margin:0 0 8px"><b>Vì sao cách này có thể sai theo hướng cao.</b> Nó giả định TTTM mới chạy ở công suất ổn định ngay. Thực tế một TTTM cần 2–3 năm để đạt lấp đầy tối ưu, và trong giai đoạn đó khấu hao cùng chi phí lãi vay đã bắt đầu chạy. <b>Năm đầu tiên sau khai trương, một Mega Mall thường làm giảm lợi nhuận trước khi làm tăng.</b></p>
+      <p style="font-size:12px;margin:0"><b>Điều tôi cố ý không làm.</b> Không quy đổi con số này thành giá cổ phiếu. Với sai số ±40% và không có lịch khai trương cụ thể, đây là công cụ <b>xếp hạng độ lớn tương đối</b> giữa các cấu phần pipeline — không phải đầu vào định giá.</p>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Diện tích sàn theo năm · thực hiện và pipeline</div>
+      <div class="chartbox"><canvas id="cGfa"></canvas></div>
+      <div class="mini" style="margin-top:8px">Phần cột nhạt từ 2027 là <b>phân bổ theo suy luận</b> của pipeline 214.000 m² đã công bố; phần 550.000 m² đã đặt cọc nhưng chưa có lịch <b>không được đưa vào biểu đồ</b> — vì đưa vào sẽ tạo cảm giác chắc chắn mà dữ liệu không cho phép.</div>
+    </div>
+  </div>
+
+  <h2 class="sec">Mảng shophouse · phần khiến VRE không còn là một landlord thuần túy</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Dự án</th><th>Tỉnh thành</th><th>Diện tích bán ròng (NSA)</th><th>Số sản phẩm</th><th>Chi phí phát triển</th><th>Kỳ vọng bàn giao</th><th>Trạng thái thực tế</th></tr></thead>
+    <tbody>
+      <tr><td><b>Vinhomes Royal Island</b><div class="mini">Vũ Yên</div></td><td>Hải Phòng</td><td>85.600 m²</td><td>~1.000</td><td>4.800 tỷ</td><td>Từ 2026 <span class="tag t3">MBS 10/2025</span></td><td class="dn"><b>Chưa phản ánh trong KH 2026 của VRE</b> (chuyển nhượng BĐS chỉ 413 tỷ)</td></tr>
+      <tr><td><b>Vinhomes Golden Avenue</b><div class="mini">Bắc Luân</div></td><td>Quảng Ninh</td><td>24.200 m²</td><td>~280</td><td>1.300 tỷ</td><td>Từ 2026 <span class="tag t3">MBS 10/2025</span></td><td class="dn"><b>Chưa phản ánh trong KH 2026</b></td></tr>
+      <tr><td><b>Vinhomes Green Paradise</b><div class="mini">Cần Giờ</div></td><td>TP.HCM</td><td class="mini">Chưa công bố</td><td class="mini">Chưa CB</td><td class="mini">Đã đặt cọc, giá trị chưa CB</td><td class="mini">Chưa công bố</td><td class="mini">MBS chưa đưa vào dự phóng do "chưa đủ thông tin"</td></tr>
+    </tbody></table></div>
+  <div class="note r"><b>Đây là chỗ hai nguồn đáng tin mâu thuẫn nhau, và cách xử lý mâu thuẫn đó quan trọng hơn bản thân con số.</b><br><br>MBS (03/10/2025) dự phóng doanh thu 2026 của VRE đạt <b>13.759 tỷ</b> — cao hơn 56% so với 2025 — với lý do: bàn giao hai dự án shophouse tạo lợi nhuận gộp 1.433 tỷ, "tăng 1.313% từ nền thấp 2025". Trên cơ sở đó MBS khuyến nghị <b>KHẢ QUAN, giá mục tiêu 36.500đ</b>.<br><br>Sáu tháng sau, ĐHĐCĐ VRE (23/04/2026) đặt kế hoạch doanh thu <b>10.132 tỷ</b>, trong đó cho thuê &amp; dịch vụ 9.719 tỷ và <b>chuyển nhượng BĐS chỉ 413 tỷ</b>. TCBS (06/2026 và 07/2026) dự phóng 10.166–10.340 tỷ, sát kế hoạch công ty.<br><br><b>Kết luận:</b> giả định trung tâm trong mô hình của MBS đã không thành hiện thực. Điều này <i>không</i> có nghĩa MBS sai ở thời điểm viết — mà có nghĩa <b>báo cáo tháng 10/2025 đã hết hạn sử dụng đối với phần dự phóng 2026</b>. Nguyên tắc vận hành: <b>mỗi CTCK chỉ lấy một báo cáo mới nhất, và khi kế hoạch chính thức của doanh nghiệp mâu thuẫn với dự phóng cũ của CTCK thì kế hoạch doanh nghiệp thắng.</b> Đây chính xác là quy tắc đã dùng ở dashboard VHM.</div>
+
+  <h2 class="sec">Chiến lược đến 2030 · những gì VRE tự nói</h2>
+  <div class="grid g4">
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Tối ưu tài sản hiện hữu</div><p style="font-size:12px;margin:0">Tái định vị và nâng cấp. Cụ thể đã công bố: <b>nâng cấp Vincom Plaza Đà Nẵng lên chuẩn Vincom Center</b> và <b>cải tạo toàn diện Vincom Plaza Hạ Long</b>. Đây là cách tăng giá thuê mà không cần thêm m².</p></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Nghiên cứu REIT hoặc M&amp;A</div><p style="font-size:12px;margin:0">Đưa các TTTM vận hành ổn định vào cấu trúc REIT khi khung pháp lý Việt Nam hoàn thiện. <b>Nếu xảy ra, đây là catalyst tái định giá lớn nhất</b> — nó biến giá trị ẩn thành giá trị quan sát được. Nhưng khung pháp lý REIT Việt Nam vẫn chưa hoàn thiện, nên đây là <i>option</i> chứ chưa phải kế hoạch.</p></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Tích hợp O2O</div><p style="font-size:12px;margin:0">Biến TTTM thành điểm giao nhận và pickup cho thương mại điện tử — chuyển TMĐT từ đối thủ thành nguồn traffic. Ý tưởng hợp lý; <b>chưa có số liệu nào cho biết nó đóng góp bao nhiêu</b>.</p></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Tăng tỷ trọng trải nghiệm</div><p style="font-size:12px;margin:0">Đưa F&amp;B, giải trí và dịch vụ lên <b>30–40% GLA</b> — nhóm ngành mà mua sắm trực tuyến không thay thế được. Đây là phản ứng trực tiếp với mô hình "điểm đến cả ngày" của Aeon. <b>Tỷ trọng hiện tại thực tế là bao nhiêu thì chưa công bố</b>, nên không đo được tiến độ.</p></div>
+  </div>
+</section>
+
+<!-- ============ 07 CẠNH TRANH ============ -->
+<section id="cp" class="tab">
+  <h2 class="sec">Bản đồ cạnh tranh · quy mô không còn là câu chuyện duy nhất</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Nhà vận hành</th><th>Xuất xứ</th><th>Quy mô hiện tại</th><th>Diện tích sàn (m²)</th><th>Lượt khách/điểm/năm</th><th>Kế hoạch đến 2030</th></tr></thead>
+    <tbody>
+      <tr style="background:#f1f8e8"><td><b>Vincom Retail (VRE)</b></td><td>Việt Nam</td><td><b>91 TTTM · 31/34 tỉnh</b></td><td><b>~1.941.000</b></td><td>~2,3 triệu (bình quân)<div class="mini">Mega Mall ~5 triệu</div></td><td>Pipeline ~214.000 m² (+11% GFA)</td></tr>
+      <tr><td><b>Aeon Mall</b></td><td>Nhật Bản</td><td>~8–10 điểm lớn</td><td>~600.000 <span class="tag t4">ước tính</span></td><td class="up"><b>6–10 triệu</b></td><td>100 cửa hàng · cam kết đầu tư 1,5 tỷ USD</td></tr>
+      <tr><td><b>Central Retail</b></td><td>Thái Lan</td><td>40 tỉnh (GO!/Big C)</td><td>~300.000 <span class="tag t4">ước tính</span></td><td class="mini">Chưa có số liệu</td><td>Đầu tư ~828 triệu USD đến 2026</td></tr>
+      <tr><td><b>Lotte</b></td><td>Hàn Quốc</td><td>3 TTTM + 16 siêu thị</td><td>~250.000 <span class="tag t4">ước tính</span></td><td class="mini">Chưa có số liệu</td><td>+2–3 TTTM lớn tại đô thị lớn</td></tr>
+    </tbody></table></div>
+  <p class="subtle">Diện tích sàn của đối thủ là ước tính từ nguồn thứ cấp; chỉ số của VRE theo công bố doanh nghiệp. VRE sở hữu diện tích sàn <b>gấp 3–6 lần</b> từng đối thủ ngoại lớn nhất.</p>
+
+  <h2 class="sec">Nơi VRE thắng · và nơi VRE đang thua</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="note g" style="margin:0 0 10px"><b>Lợi thế cấu trúc — khó sao chép, và đang thật</b></div>
+      <div class="q"><div class="n g">1</div><div><h4>Độ phủ toàn quốc là lợi thế đàm phán, không chỉ là con số</h4><p>91 TTTM tại 31/34 tỉnh — gấp ~9 lần số điểm của Aeon. Một thương hiệu muốn mở chuỗi toàn quốc gần như <b>bắt buộc phải làm việc với VRE</b>: ký một hợp đồng khung thay vì đàm phán với hàng chục chủ mặt bằng. Hiệu ứng mạng lưới này là rào cản thật, và nó giải thích vì sao ~140 thương hiệu mới gia nhập chỉ trong 6T2026.</p></div></div>
+      <div class="q"><div class="n g">2</div><div><h4>Vị trí lõi đô thị gần như không thể tái tạo</h4><p>Vincom Center Bà Triệu, Đồng Khởi nằm ở những vị trí mà giá thuê CBD Hà Nội đạt ~172 USD/m²/tháng (+16,2% YoY theo CBRE) và nguồn cung mới hầu như bằng không. Đây là phần tài sản có <b>giá trị ẩn lớn nhất</b> — thương vụ Nguyễn Chí Thanh (3.630 tỷ, lãi ~1.900 tỷ) là bằng chứng định lượng.</p></div></div>
+      <div class="q"><div class="n g">3</div><div><h4>Ở tỉnh cấp 2–3, VRE thường là lựa chọn duy nhất</h4><p>Aeon, Lotte, Central Retail đều tập trung ở Hà Nội và TP.HCM. Tại phần lớn trong 31 tỉnh thành VRE có mặt, <b>VRE là nhà vận hành TTTM số 1 hoặc duy nhất</b> — một vị thế độc quyền tự nhiên. Và đây đúng là phân khúc có hộ trung lưu tăng nhanh nhất (~8%/năm ở các thành phố nhỏ so với ~5% ở hai đô thị lớn).</p></div></div>
+      <div class="q"><div class="n g">4</div><div><h4>Rào cản gia nhập rất cao</h4><p>Khan hiếm vị trí đẹp, 3–5 năm để phát triển một TTTM, và cần sẵn mạng lưới khách thuê. Một đối thủ mới không thể mua được ba thứ này bằng tiền trong ngắn hạn.</p></div></div>
+    </div>
+    <div class="card">
+      <div class="note r" style="margin:0 0 10px"><b>Nơi lợi thế đang bị bào mòn — và đây là phần đề xuất khung ban đầu nhận diện đúng</b></div>
+      <div class="q"><div class="n r">1</div><div><h4>Aeon thắng ở hiệu suất mỗi điểm, không phải ở quy mô</h4><p>Mỗi đại siêu thị Aeon hút <b>6–10 triệu lượt khách/năm</b>, cao hơn cả mức ~5 triệu/điểm của Vincom Mega Mall — dù nhiều điểm Aeon nằm ở ngoại ô "vắng vẻ". Aeon Đà Nẵng (điểm thứ 8) khai trương 7/2026; Aeon Hạ Long cuối 2026 dự kiến 10 triệu khách/năm. <b>Quy mô của VRE lớn hơn, nhưng năng suất trên mỗi điểm thì không.</b></p></div></div>
+      <div class="q"><div class="n r">2</div><div><h4>Sức hút của Aeon đến từ trải nghiệm, không phải vị trí — nên tiền không mua lại được nhanh</h4><p>Gửi xe miễn phí (xóa rào cản tâm lý mà nhiều TTTM trong nước từng thu phí), food court và khu vui chơi gia đình chất lượng cao, không gian rộng sạch chuẩn Nhật. Mô hình biến mỗi chuyến đi thành <b>hoạt động giải trí cả ngày</b> thay vì chỉ mua sắm. Đây là thứ VRE phải xây bằng vận hành và vốn nâng cấp, không phải bằng thêm m².</p></div></div>
+      <div class="q"><div class="n r">3</div><div><h4>Khách đang dịch chuyển khỏi các tài sản cũ của VRE — đã được ghi nhận, không phải phỏng đoán</h4><p>TCBS ghi rõ: "thực tế 2026 cho thấy lưu lượng khách dịch chuyển từ một số TTTM cũ của VRE sang Aeon". Nhóm chịu áp lực là <b>Vincom Plaza tỉnh lẻ và một số Vincom Center cũ</b> — cũng chính là nhóm chứa gần ba phần tư diện tích còn trống của hệ thống. <b>Hai vấn đề này gộp lại thành một: dư địa lấp đầy nằm đúng ở nơi cầu đang yếu đi.</b></p></div></div>
+      <div class="q"><div class="n y">4</div><div><h4>Thương hiệu quốc tế cao cấp và giải trí là khoảng trống định vị</h4><p>Vincom Center giữ được nhóm luxury ở CBD, nhưng ở tầng trải nghiệm — rạp chiếu, khu vui chơi, ẩm thực đặc sắc — mô hình Nhật và Hàn vẫn được người tiêu dùng đánh giá cao hơn. Kế hoạch nâng F&amp;B/giải trí lên 30–40% GLA là phản ứng đúng hướng, nhưng <b>VRE không công bố tỷ trọng hiện tại nên không ai đo được tiến độ</b>.</p></div></div>
+    </div>
+  </div>
+
+  <h2 class="sec">Thương mại điện tử · rủi ro thật nhưng thường bị nói quá</h2>
+  <div class="grid g3">
+    <div class="card"><div class="note" style="margin:0"><b>Quy mô thực tế.</b> TMĐT Việt Nam 2025 đạt ~32 tỷ USD, tương đương <b>~12% tổng bán lẻ</b> (7.009 nghìn tỷ đồng ≈ 276 tỷ USD), tăng trên 20%/năm. Đây là tốc độ nhanh nhưng nền còn nhỏ so với phần bán lẻ hiện đại vật lý.</div></div>
+    <div class="card"><div class="note g" style="margin:0"><b>Vì sao TTTM chưa bị thay thế.</b> Cơ cấu khách thuê đang dịch chuyển sang F&amp;B, giải trí và dịch vụ — nhóm chiếm 30–40% diện tích và <b>không thể mua online</b>. Một suất ăn, một buổi xem phim, một lớp học cho trẻ không có phiên bản giao hàng. Đây là lý do các TTTM chuyển thành "điểm đến trải nghiệm" thay vì "nơi mua đồ".</div></div>
+    <div class="card"><div class="note y" style="margin:0"><b>Nơi rủi ro thật nằm.</b> Không phải ở tổng thể, mà ở <b>nhóm khách thuê thời trang và điện tử</b> — hai ngành có tỷ lệ chuyển sang online cao nhất. Nếu nhóm này giảm diện tích thuê hoặc đàm phán hạ giá, tác động rơi mạnh nhất vào <b>Vincom Plaza tỉnh lẻ</b>, nơi tỷ trọng thời trang cao và tỷ trọng F&amp;B/giải trí thấp hơn. <b>Không có số liệu cơ cấu ngành hàng nên không lượng hóa được.</b></div></div>
+  </div>
+
+  <h2 class="sec">Nguồn cung mới · áp lực định lượng được</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Nguồn cung hiện tại TP.HCM</div><div class="val">~1,6 tr</div><div class="sub">m² · lấp đầy 93,6% (Q4/25)</div></div>
+    <div class="card kpi"><div class="lab">Nguồn cung hiện tại Hà Nội</div><div class="val">~1,8 tr</div><div class="sub wn">m² · lấp đầy 86%</div></div>
+    <div class="card kpi"><div class="lab">Nguồn cung mới HN 2026–2028</div><div class="val dn">~330k</div><div class="sub dn">m² · +18% nguồn cung Hà Nội</div></div>
+    <div class="card kpi"><div class="lab">Nguồn cung mới HCM 2026–2028</div><div class="val">~165k</div><div class="sub">m² · +10% nguồn cung TP.HCM</div></div>
+  </div>
+  <div class="note y"><b>Vì sao chỉ số này đáng theo dõi hơn vẻ ngoài.</b> Hà Nội đã có tỷ lệ lấp đầy thấp hơn TP.HCM (86% so với 93,6%) và sắp nhận thêm ~330.000 m² trong ba năm — gấp đôi lượng bổ sung của TP.HCM. TCBS ghi nhận riêng Q2/2026 nguồn cung bán lẻ Hà Nội đã tăng thêm <b>~58.000 m²</b>, và cùng quý đó tỷ lệ lấp đầy toàn hệ thống VRE <b>giảm nhẹ từ 88,9% xuống 88,6%</b>. Một quý chưa chứng minh nhân quả, nhưng thời điểm trùng khớp khiến đây trở thành cặp chỉ số cần theo dõi song song trong Q3–Q4/2026: <b>nguồn cung mới Hà Nội</b> và <b>lấp đầy hệ thống VRE</b>.</div>
+</section>
+
+<!-- ============ 08 DÒNG TIỀN ============ -->
+<section id="cf" class="tab">
+  <h2 class="sec">Nghịch lý trung tâm · biên EBITDA 60% nhưng dòng tiền âm</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">EBITDA 2025</div><div class="val">5.274</div><div class="sub up">~60% doanh thu · biên rất cao</div></div>
+    <div class="card kpi"><div class="lab">Dòng tiền HĐKD 2025</div><div class="val dn">−3.262</div><div class="sub dn">tỷ đồng · chuyển âm</div></div>
+    <div class="card kpi"><div class="lab">Chênh lệch EBITDA − CFO</div><div class="val dn">8.536</div><div class="sub dn">tỷ đồng không thành tiền mặt</div></div>
+    <div class="card kpi"><div class="lab">Số năm FCF âm liên tiếp</div><div class="val dn">3</div><div class="sub dn">2023 · 2024 · 2025</div></div>
+  </div>
+
+  <div class="grid g21" style="margin-top:12px">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">EBITDA so với dòng tiền tự do · 2021–2030</div>
+      <div class="chartbox"><canvas id="cFcf"></canvas></div>
+      <div class="mini" style="margin-top:8px">Cột là EBITDA thực hiện và dự phóng; đường là dòng tiền tự do. Từ 2026 trở đi là <b>dự phóng của TCBS</b>, không phải số thực hiện — và mô hình đó giả định FCF bật lại dương mạnh (+2.916 tỷ năm 2026). <b>Đó là giả định lớn nhất trong toàn bộ mô hình</b>, vì nó ngụ ý vòng quay vốn lưu động đảo chiều ngay trong năm — điều chưa xảy ra ba năm liền. <span class="tag t3">TCBS TCA</span></div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Tiền năm 2025 thực sự đến từ đâu</div>
+      <div class="kv"><span>Dòng tiền từ hoạt động kinh doanh</span><b class="dn">−3.262 tỷ</b></div>
+      <div class="kv"><span>Bán Vincom Center Nguyễn Chí Thanh</span><b class="up">+3.630 tỷ</b></div>
+      <div class="kv"><span>Nợ vay dài hạn tăng thêm</span><b class="up">+3.857 tỷ</b></div>
+      <div class="kv"><span>⇒ Tiền cuối kỳ</span><b>4.435 tỷ (+54%)</b></div>
+      <div class="note r" style="margin-top:10px;font-size:11.5px"><b>Đọc thẳng: vị thế tiền mặt cải thiện 54% trong năm 2025 không đến từ hoạt động cho thuê.</b> Nó đến từ việc bán một trung tâm thương mại và vay thêm 3.857 tỷ. Điều này không sai về mặt tài chính — VRE có đòn bẩy cực thấp nên hoàn toàn đủ dư địa vay. Nhưng nó có nghĩa: <b>khoản cổ tức 2.272 tỷ trả trong Q3/2026 đang được tài trợ gián tiếp bằng tài sản đã bán và nợ đã vay, chứ không phải bằng dòng tiền do danh mục TTTM tạo ra.</b> Cổ tức đó chỉ trở thành bền vững khi CFO quay về dương.</div>
+    </div>
+  </div>
+
+  <h2 class="sec">Vì sao dòng tiền âm · và điều gì phải xảy ra để nó đảo chiều</h2>
+  <div class="grid g3">
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Nguyên nhân được nêu</div><p style="font-size:12px;margin:0">Tăng mạnh các khoản <b>phải thu và trả trước/hợp tác đầu tư</b> phục vụ chu kỳ mở rộng pipeline. Phải thu ngắn hạn tăng từ 2.016 lên 2.886 tỷ. Nói cách khác: <b>tiền thuê thu được đang bị chuyển ngay thành khoản đặt cọc cho các dự án tương lai</b> — cùng một dòng tiền, hai lần được đếm là "hoạt động tốt".</p></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Một khác biệt số liệu cần ghi nhận</div><p style="font-size:12px;margin:0">Trong cùng báo cáo TCBS, phần diễn giải ghi <b>số ngày phải thu ~188 ngày</b> ("ở mức cao"), trong khi bảng mô hình tài chính của chính báo cáo đó ghi <b>62 ngày</b> cho năm 2025. Hai con số chênh ba lần. Tôi không chọn con số nào — chỉ ghi nhận rằng <b>chỉ tiêu này cần tính lại trực tiếp từ BCTC</b> trước khi dùng.</p></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Điều kiện để đảo chiều</div><p style="font-size:12px;margin:0">CFO chỉ dương trở lại khi <b>tốc độ giải ngân đặt cọc mới chậm lại</b> hoặc <b>các khoản đã đặt cọc bắt đầu chuyển thành mặt bằng vận hành</b>. Tín hiệu sớm nhất: BĐS đầu tư tăng mà đặt cọc không tăng tương ứng. Trong 6T2026, BĐS đầu tư chỉ tăng 1.778 tỷ — chậm hơn nhiều so với +6.441 tỷ của cả năm 2025. <b>Cần biết vì sao</b>.</p></div>
+  </div>
+
+  <h2 class="sec">Cấu trúc vốn · điểm mạnh không thể tranh cãi của hồ sơ này</h2>
+  <div class="grid g21">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Nợ vay và tiền · 2021–Q2/2026</div>
+      <div class="chartbox"><canvas id="cDebt"></canvas></div>
+      <div class="mini" style="margin-top:8px">Nợ ròng/VCSH: −11,8% (2022, tức tiền mặt ròng) → −3,3% (2023) → 3,6% (2024) → 3,8% (2025) → <b>1,1% (Q2/2026)</b>. Trong khi phần lớn doanh nghiệp BĐS niêm yết Việt Nam có D/E 0,5–1,5 lần cùng áp lực đáo hạn trái phiếu lớn, VRE là ngoại lệ.</div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">Các chỉ số an toàn tài chính</div>
+      <div class="kv"><span>Tổng vay &amp; trái phiếu (30/06/2026)</span><b>6.406 tỷ</b></div>
+      <div class="kv"><span>Tiền &amp; tiền gửi có kỳ hạn</span><b>5.843 tỷ</b></div>
+      <div class="kv"><span>Nợ ròng</span><b>~564 tỷ</b></div>
+      <div class="kv"><span>Nợ ròng / Vốn chủ sở hữu</span><b class="up">1,1%</b></div>
+      <div class="kv"><span>Vốn chủ / Tổng nguồn vốn</span><b class="up">79%</b></div>
+      <div class="kv"><span>EBIT / Lãi vay</span><b class="up">6,2 lần</b></div>
+      <div class="kv"><span>Vay / EBITDA</span><b class="up">1,0 lần</b></div>
+      <div class="note g" style="margin-top:10px;font-size:11.5px"><b>Đây là điều cân bằng lại toàn bộ những cảnh báo ở trên.</b> Với đòn bẩy gần bằng không và vốn chủ 49.311 tỷ, VRE có dư địa vay rất lớn để tài trợ toàn bộ pipeline ~214.000 m² <b>mà không cần phát hành thêm cổ phiếu</b> — nghĩa là cổ đông hiện hữu không bị pha loãng. Kể cả trong kịch bản dòng tiền hoạt động tiếp tục âm thêm vài năm, rủi ro mất khả năng thanh toán là rất thấp. <b>Vấn đề của VRE là hiệu quả sử dụng vốn, không phải khả năng sống sót.</b> Đó là một loại rủi ro hoàn toàn khác — và dễ chịu hơn nhiều.</div>
+    </div>
+  </div>
+
+  <h2 class="sec">Danh sách kiểm tra khi BCTC bán niên 2026 soát xét được công bố</h2>
+  <div class="tw"><table>
+    <thead><tr><th style="width:34px">#</th><th>Thuyết minh cần đọc</th><th>Câu hỏi cụ thể</th><th>Ưu tiên</th></tr></thead>
+    <tbody>
+      <tr><td><b>1</b></td><td><b>Tài sản dài hạn khác &amp; các khoản đặt cọc</b></td><td>Số dư đặt cọc chính xác 30/06/2026 là bao nhiêu? Đặt cọc cho dự án nào, diện tích bao nhiêu, kỳ hạn thu hồi, có tài sản bảo đảm không?</td><td><span class="tag t4">Rất cao</span></td></tr>
+      <tr><td><b>2</b></td><td><b>Giao dịch với các bên liên quan</b></td><td><b>Lãi suất áp dụng cho khoản đặt cọc là bao nhiêu?</b> Có ngang mặt bằng thị trường không? Tổng lãi ghi nhận từ bên liên quan trong kỳ?</td><td><span class="tag t4">Rất cao</span></td></tr>
+      <tr><td><b>3</b></td><td><b>Doanh thu hoạt động tài chính · chi tiết</b></td><td>Trong 625 tỷ của Q2, bao nhiêu là lãi tiền gửi ngân hàng và bao nhiêu là lãi cọc từ bên liên quan? Đây là phép thử trực tiếp cho chất lượng lợi nhuận.</td><td><span class="tag t4">Rất cao</span></td></tr>
+      <tr><td><b>4</b></td><td><b>Báo cáo lưu chuyển tiền tệ</b></td><td>CFO 6T2026 là dương hay âm? Nếu vẫn âm, khoản mục nào hút tiền? Đây là chỉ báo quyết định tính bền vững của cổ tức.</td><td><span class="tag t4">Rất cao</span></td></tr>
+      <tr><td><b>5</b></td><td><b>BĐS đầu tư &amp; chi phí XDCB dở dang</b></td><td>Vì sao BĐS đầu tư chỉ tăng 1.778 tỷ trong 6 tháng, chậm hơn nhiều so với 2025? Dự án nào đang chậm?</td><td>Cao</td></tr>
+      <tr><td><b>6</b></td><td><b>Chi phí đi vay được vốn hóa</b></td><td>Bao nhiêu lãi vay đang được vốn hóa vào tài sản đang xây dựng, sẽ hiện ra dưới dạng khấu hao trong tương lai?</td><td>Cao</td></tr>
+      <tr><td><b>7</b></td><td><b>Hàng tồn kho BĐS (shophouse)</b></td><td>Giá trị shophouse Royal Island và Golden Avenue đang nằm ở đâu trên bảng cân đối? Tiến độ bán ra sao?</td><td>Cao</td></tr>
+      <tr><td><b>8</b></td><td><b>Thuyết minh doanh thu theo mảng</b></td><td>Tách chính xác cho thuê / dịch vụ quản lý / chuyển nhượng BĐS — để kiểm chứng giả định "~80% từ cho thuê".</td><td>Trung bình</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- ============ 09 ĐỊNH GIÁ ============ -->
+<section id="vl" class="tab">
+  <h2 class="sec">Vì sao P/E là công cụ sai cho VRE · và cái gì đúng hơn</h2>
+  <div class="grid g3">
+    <div class="card"><div class="note r" style="margin:0"><b>P/E · dùng sai sẽ ra kết luận ngược.</b> P/E báo cáo ~7,0x (giá 21.300đ, 29/07/2026) trông rẻ nhất nhóm bất động sản. Nhưng EPS 2025 là 2.836đ đã bao gồm lãi bất thường ~1.900 tỷ. Loại ra: <b>EPS chuẩn hóa ~2.000đ, P/E chuẩn hóa ~14–15x</b> — ngang bằng peer khu vực, không còn chiết khấu. <b>P/E ở đây không đo mức rẻ, nó đo mức độ bất thường của mẫu số.</b></div></div>
+    <div class="card"><div class="note g" style="margin:0"><b>P/B · phù hợp hơn với mô hình sở hữu tài sản.</b> ~1,0x tại giá 21.300đ (BVPS ~21.700đ) — thấp hơn ~45% mức bình quân 8 năm (~1,9x) và dưới cả đáy lịch sử 0,9x (2024). Với ROE 14,7% (hoặc 8–9% nếu chỉ tính hoạt động cho thuê), P/B ~1,0x là mức có biên an toàn. <b>Nhưng P/B chỉ có ý nghĩa nếu giá trị sổ sách đáng tin</b> — và ~41% tài sản là khoản đặt cọc chưa kiểm chứng được điều kiện thu hồi.</div></div>
+    <div class="card"><div class="note" style="margin:0"><b>Cap rate / NAV · đúng bản chất nhất.</b> Định giá một danh mục TTTM giống cách định giá một tòa nhà cho thuê: <b>giá trị = NOI ÷ cap rate</b>. Cách này bỏ qua nhiễu kế toán, tách bạch được phần tài sản đang tạo tiền và phần tài sản chưa tạo tiền. MBS dùng cap rate 8,0% và ra 35.300đ/cp. Mô hình bên dưới cho phép bạn tự đổi giả định.</div></div>
+  </div>
+
+  <h2 class="sec">Mô hình định giá theo cap rate · điều chỉnh giả định để xem hồ sơ này nhạy với cái gì</h2>
+  <div class="grid g21">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:10px">Giả định đầu vào</div>
+      <div class="calc">
+        <div>
+          <div class="sl"><label>NOI mảng cho thuê (tỷ đ/năm) <b id="lNoi">5.800</b></label><input type="range" id="rNoi" min="4200" max="7500" step="100" value="5800" oninput="calcNav()"></div>
+          <div class="sl"><label>Cap rate <b id="lCap">8,5%</b></label><input type="range" id="rCap" min="65" max="120" step="1" value="85" oninput="calcNav()"></div>
+        </div>
+        <div>
+          <div class="sl"><label>Tỷ lệ thu hồi khoản đặt cọc <b id="lDep">85%</b></label><input type="range" id="rDep" min="0" max="100" step="5" value="85" oninput="calcNav()"></div>
+          <div class="sl"><label>Giá trị mảng shophouse (tỷ đ) <b id="lDev">3.000</b></label><input type="range" id="rDev" min="0" max="8000" step="250" value="3000" oninput="calcNav()"></div>
+        </div>
+      </div>
+      <div class="scn">
+        <button onclick="setScn(5200,105,50,0)">Kịch bản thận trọng</button>
+        <button onclick="setScn(5800,85,85,3000)">Kịch bản cơ sở</button>
+        <button onclick="setScn(6400,75,100,7400)">Kịch bản tích cực</button>
+      </div>
+      <div class="tw" style="margin-top:12px"><table style="min-width:auto">
+        <thead><tr><th>Cấu phần</th><th style="text-align:right">Giá trị (tỷ đồng)</th></tr></thead>
+        <tbody id="navTbl"></tbody>
+      </table></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="res"><small>GIÁ TRỊ MỖI CỔ PHIẾU THEO GIẢ ĐỊNH HIỆN TẠI</small><div class="big" id="navPs">—</div><small id="navVs">so với vùng giá thị trường ~22.000–26.000đ</small></div>
+      <div>
+        <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Ba kịch bản · kết quả</div>
+        <div class="kv"><span>Thận trọng · cap 10,5% · cọc thu hồi 50%</span><b>~24.700đ</b></div>
+        <div class="kv"><span>Cơ sở · cap 8,5% · cọc thu hồi 85%</span><b>~36.500đ</b></div>
+        <div class="kv"><span>Tích cực · cap 7,5% · cọc thu hồi 100%</span><b>~47.000đ</b></div>
+        <div class="kv"><span>Tham chiếu: MBS (10/2025), cap 8,0%</span><b>35.300đ</b></div>
+      </div>
+      <div class="note y" style="margin:0;font-size:11.5px"><b>Điều mô hình này thực sự cho biết.</b> Ở kịch bản thận trọng — cap rate 10,5% và <b>chỉ thu hồi được một nửa khoản đặt cọc</b> — giá trị ra đúng bằng vùng giá thị trường hiện tại. Nghĩa là: <b>thị trường đang định giá VRE như thể một nửa số tiền đã đặt cọc cho Vingroup–Vinhomes sẽ không quay lại thành tài sản sinh lời</b>, cộng với một cap rate cao hơn mặt bằng khu vực. Đó có thể là bi quan quá mức, hoặc là một đánh giá tỉnh táo về rủi ro quản trị — nhưng ít nhất giờ ta biết <b>thị trường đang cãi nhau về biến số nào</b>.</div>
+    </div>
+  </div>
+
+  <div class="note r"><b>Bốn giới hạn của mô hình này, nói trước khi ai đó dùng nó để ra quyết định.</b> <b>(1) NOI không phải số công bố.</b> VRE không công bố NOI. Tôi dùng EBITDA làm proxy — nó bỏ qua chi phí quản lý doanh nghiệp phân bổ và không loại được phần thu nhập khác lẫn vào. <b>(2) Cap rate là giả định, không phải quan sát.</b> Việt Nam không có thị trường giao dịch TTTM đủ sâu để có cap rate tham chiếu đáng tin. MBS dựng 8,0% từ mô hình (Rf 3,0% + Beta 0,9 × ERP 9,0% = Ke 10,7%, trừ g 2,5%) — đó là công thức, không phải giá thị trường. Thương vụ Nguyễn Chí Thanh là <b>giao dịch tham chiếu duy nhất</b> và không đủ thông tin về NOI của tài sản đó để suy ra cap rate ngụ ý. <b>(3) Khoản đặt cọc bị đếm ở dạng nguyên giá</b>, không chiết khấu theo thời gian chờ — trong khi thời gian chờ chính là rủi ro. <b>(4) Toàn bộ mô hình đứng trên con số đặt cọc gắn nhãn TIER 4 chưa đối chiếu được với bảng cân đối</b> (xem tab 05). <b>Hãy dùng mô hình này để hiểu hồ sơ nhạy với biến nào, không phải để ra một con số giá mục tiêu.</b></div>
+
+  <h2 class="sec">Định giá lịch sử và so sánh khu vực</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">P/E · P/B · ROE qua các năm</div>
+      <div class="chartbox"><canvas id="cVal"></canvas></div>
+      <div class="mini" style="margin-top:8px">Giai đoạn 2018–2021 VRE giao dịch ở P/E 25–52x và P/B 2,2–2,9x — thị trường trả giá cho kỳ vọng mở mới liên tục. Từ 2022, định giá bị hạ về vùng thấp vì lo ngại TMĐT và giai đoạn đầu tư nặng. <b>Mức P/B ~1,0x hiện tại thấp hơn cả đáy lịch sử 0,9x không nhiều</b> — và đó là trên nền ROE đã phục hồi lên 14,7%. <span class="tag t3">TCBS TCA</span></div>
+    </div>
+    <div class="card">
+      <div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px">So sánh với các nhà vận hành TTTM khu vực (T6/2026)</div>
+      <div class="tw"><table style="min-width:auto">
+        <thead><tr><th>Doanh nghiệp</th><th>Quốc gia</th><th>P/E</th><th>P/B</th></tr></thead>
+        <tbody>
+          <tr><td>Simon Property Group</td><td>Mỹ</td><td>14,2x</td><td class="mini">n/a *</td></tr>
+          <tr><td>CapitaLand Integrated Trust</td><td>Singapore</td><td>17,0x</td><td>~1,0x</td></tr>
+          <tr><td>Central Pattana (CPN)</td><td>Thái Lan</td><td>14,9x</td><td>4,4x</td></tr>
+          <tr><td>SM Prime Holdings</td><td>Philippines</td><td>~13x</td><td>1,7x</td></tr>
+          <tr style="background:#f1f8e8"><td><b>Vincom Retail (VRE)</b></td><td>Việt Nam</td><td><b>14–15x</b> **</td><td><b>1,0–1,3x</b></td></tr>
+        </tbody></table></div>
+      <div class="mini" style="margin-top:8px">(*) P/B của Simon Property bị méo do mua lại cổ phiếu quy mô lớn. (**) P/E VRE đã chuẩn hóa loại lãi bất thường; P/E báo cáo là 7,0–9,8x tùy ngày.<br><br><b>Kết luận từ bảng này:</b> theo P/E chuẩn hóa, VRE giao dịch <b>ngang bằng</b> peer khu vực — không rẻ, không đắt. Theo P/B, VRE nằm ở <b>vùng thấp</b>, dưới Central Pattana (4,4x) và SM Prime (1,7x), ngang CapitaLand (~1,0x). Vì VRE là mô hình sở hữu tài sản nặng, P/B là thước đo phù hợp hơn — <b>và theo thước đo đó, mức chiết khấu là có thật</b>. Câu hỏi còn lại: chiết khấu đó phản ánh cơ hội, hay phản ánh rủi ro quản trị mà thị trường nhìn thấy?</div>
+    </div>
+  </div>
+
+  <h2 class="sec">Giá trị ẩn · bằng chứng định lượng duy nhất hiện có</h2>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Giá bán Vincom Center Nguyễn Chí Thanh</div><div class="val">3.630</div><div class="sub">tỷ đồng · T10/2025 <span class="tag t1">T1</span></div></div>
+    <div class="card kpi"><div class="lab">Lãi ghi nhận</div><div class="val up">~1.900</div><div class="sub">tỷ đồng · Q4/2025</div></div>
+    <div class="card kpi"><div class="lab">⇒ Giá trị sổ sách ngụ ý</div><div class="val">~1.730</div><div class="sub">tỷ đồng · tính ngược</div></div>
+    <div class="card kpi"><div class="lab">⇒ Giá thị trường / sổ sách</div><div class="val up">~2,1x</div><div class="sub">của riêng tài sản này</div></div>
+  </div>
+  <div class="note g"><b>Một giao dịch, ba điều nó chứng minh và một điều nó không.</b> <b>Chứng minh được:</b> (1) tài sản TTTM lõi đô thị của VRE có giá thị trường cao hơn đáng kể giá trị ghi sổ — cụ thể ~2,1 lần với tài sản này; (2) có người mua thật, trả tiền thật, ở quy mô nghìn tỷ; (3) do đó giá trị tài sản ròng thực của VRE nhiều khả năng <b>cao hơn vốn chủ sổ sách 49.311 tỷ</b>, củng cố luận điểm P/B ~1,0x có biên an toàn.<br><br><b>Không chứng minh được:</b> rằng hệ số 2,1x áp dụng cho toàn danh mục. Nguyễn Chí Thanh là một <b>Vincom Center ở lõi Hà Nội</b> — nhóm tài sản đắt giá nhất, khan hiếm nhất, chỉ chiếm 12,2% GFA. Áp hệ số này cho 61 Vincom Plaza tỉnh lẻ có lấp đầy 84% là cách nhanh nhất để ra một con số NAV sai nhiều lần. <b>Đây đúng là bài học rút ra từ dashboard VHM: không nhân một đơn giá quan sát được ở tài sản tốt nhất cho toàn bộ danh mục.</b></div>
+</section>
+
+<!-- ============ 10 KHUNG RA QUYẾT ĐỊNH ============ -->
+<section id="fw" class="tab">
+  <h2 class="sec">Bảy câu hỏi quyết định · và trạng thái trả lời tính tới 07/09/2026</h2>
+  <div class="card">
+    <div class="q"><div class="n g">1</div><div><h4>Vận hành cốt lõi có đang thực sự tốt lên không?</h4><p><b>Có — đây là phần vững nhất của hồ sơ.</b> Lấp đầy 88,6% (+2,3 đ% YoY), biên gộp 58,9% (cao nhất nhiều quý), doanh thu cho thuê +9,7% (+11,5% nếu loại tài sản đã bán), lượt khách 6T +11,6%, ~140 thương hiệu mới. Đòn bẩy hoạt động đang dương và rõ ràng. <b>Ngưỡng cảnh báo:</b> lấp đầy giảm hai quý liên tiếp, hoặc biên gộp rơi dưới 54%.</p></div></div>
+    <div class="q"><div class="n y">2</div><div><h4>Lợi nhuận có bền không, hay đang dựa vào các khoản không lặp lại?</h4><p><b>Một nửa bền, một nửa cần theo dõi.</b> Lợi nhuận gộp từ cho thuê tăng 18,3% — thật và bền. Nhưng ~31% LNTT Q2 đến từ hoạt động tài chính (625 tỷ), phần lớn là lãi cọc từ bên liên quan; và 2025 chứa ~1.900 tỷ bất thường, 6T2026 chứa ~185 tỷ lãi bán tài sản. <b>Ngưỡng cảnh báo:</b> tỷ trọng lợi nhuận tài chính vượt 35% LNTT, hoặc xuất hiện thêm giao dịch bán tài sản trong hai quý liên tiếp.</p></div></div>
+    <div class="q"><div class="n r">3</div><div><h4>Khoản ~14.500–24.900 tỷ đặt cọc bao giờ thành trung tâm thương mại?</h4><p><b>Chưa trả lời được — và đây là câu hỏi lớn nhất.</b> VRE chưa công bố lịch bàn giao mặt bằng theo dự án, kỳ hạn thu hồi, lãi suất cọc hay điều kiện hoàn trả. Số dư còn chưa đối chiếu được với bảng cân đối (tab 05). <b>Ngưỡng cảnh báo:</b> số dư đặt cọc tiếp tục tăng trong khi BĐS đầu tư đi ngang — trong 6T2026, BĐS đầu tư chỉ tăng 1.778 tỷ, chậm rõ so với 2025.</p></div></div>
+    <div class="q"><div class="n r">4</div><div><h4>Dòng tiền hoạt động có quay về dương không?</h4><p><b>Chưa biết, và đây là phép thử quyết định.</b> FCF âm ba năm liên tiếp; CFO 2025 âm 3.262 tỷ dù EBITDA 5.274 tỷ. Mô hình TCBS giả định FCF bật lên +2.916 tỷ ngay trong 2026 — một giả định lớn chưa có bằng chứng. <b>Ngưỡng cảnh báo:</b> CFO 6T2026 vẫn âm khi BCTC soát xét công bố. <b>Tín hiệu tích cực:</b> CFO dương và đủ trang trải cổ tức 2.272 tỷ.</p></div></div>
+    <div class="q"><div class="n y">5</div><div><h4>Lấp đầy còn tăng được nữa không, và tăng ở đâu?</h4><p><b>Còn dư địa nhưng ở nhóm khó nhất.</b> Vincom Center 96% và Mega Mall 93% gần như đã kín; ~74% diện tích trống nằm ở Vincom Plaza tỉnh lẻ (84,1%) và Vincom+ (80,2%) — đúng nhóm đang mất khách vào tay Aeon. Q2/2026 lấp đầy đã chững nhẹ (88,9% → 88,6%). <b>Ngưỡng cảnh báo:</b> lấp đầy Vincom Plaza rơi dưới 83%.</p></div></div>
+    <div class="q"><div class="n y">6</div><div><h4>Lợi thế cạnh tranh có bền vững không?</h4><p><b>Bền ở quy mô, đang bào mòn ở trải nghiệm.</b> Độ phủ 31/34 tỉnh và vị trí CBD là rào cản thật, khó sao chép. Nhưng Aeon hút 6–10 triệu lượt/điểm so với ~5 triệu của Mega Mall, và TCBS ghi nhận khách đang dịch chuyển khỏi một số TTTM cũ của VRE. Hà Nội sắp nhận thêm ~330.000 m² nguồn cung 2026–2028. <b>Ngưỡng cảnh báo:</b> VRE bắt đầu công bố hoặc bị ghi nhận traffic like-for-like âm.</p></div></div>
+    <div class="q"><div class="n">7</div><div><h4>Định giá đã phản ánh điều gì?</h4><p><b>Đã phản ánh một kịch bản khá bi quan.</b> Ở vùng giá 22.000–26.000đ, mô hình cap rate ngụ ý thị trường đang giả định cap rate ~10,5% <i>và</i> chỉ ~50% khoản đặt cọc thu hồi được. P/B ~1,0x so với bình quân 8 năm ~1,9x. P/E chuẩn hóa 14–15x ngang peer khu vực. <b>Câu hỏi thật không phải "rẻ hay đắt" mà là: mức chiết khấu này phản ánh cơ hội, hay phản ánh một rủi ro quản trị mà thị trường nhìn thấy còn ta thì chưa đo được?</b></p></div></div>
+  </div>
+
+  <h2 class="sec">Bộ chỉ số theo dõi hàng quý · và ngưỡng kích hoạt</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Chỉ số</th><th>Mức hiện tại</th><th>Tín hiệu tích cực</th><th>Tín hiệu cảnh báo</th><th>Nguồn</th></tr></thead>
+    <tbody>
+      <tr><td><b>Tỷ lệ lấp đầy toàn hệ thống</b></td><td>88,6% (Q2/26)</td><td>Vượt 90% và duy trì hai quý</td><td>Giảm hai quý liên tiếp, hoặc rơi dưới 87%</td><td class="mini">Báo cáo công ty</td></tr>
+      <tr><td><b>Lấp đầy Vincom Plaza riêng</b></td><td>84,1% (Q4/25)</td><td>Vượt 87% — chứng tỏ tỉnh lẻ vẫn hút khách thuê</td><td>Rơi dưới 83%</td><td class="mini">Earnings Presentation</td></tr>
+      <tr><td><b>Biên lợi nhuận gộp</b></td><td>58,9% (Q2/26)</td><td>Duy trì trên 58% khi TTTM mới vào vận hành</td><td>Rơi dưới 54% do khấu hao TTTM mới</td><td class="mini">BCTC quý</td></tr>
+      <tr><td><b>Tỷ trọng LN tài chính / LNTT</b></td><td class="wn">~31% (Q2/26)</td><td>Giảm dưới 20% mà LNTT vẫn tăng</td><td>Vượt 35%, hoặc LNTT giảm khi lãi cọc chậm lại</td><td class="mini">BCTC quý</td></tr>
+      <tr><td><b>Dòng tiền HĐKD lũy kế</b></td><td class="dn">−3.262 tỷ (2025)</td><td>Dương và đủ trang trải cổ tức + lãi vay</td><td>Tiếp tục âm trong 2026</td><td class="mini">BCTC quý/bán niên</td></tr>
+      <tr><td><b>Số dư đặt cọc bên liên quan</b></td><td class="dn">~24.895 tỷ (cuối 2025)</td><td>Giảm, đồng thời BĐS đầu tư tăng tương ứng</td><td>Tăng tiếp trong khi BĐS đầu tư đi ngang</td><td class="mini">Thuyết minh BCTC</td></tr>
+      <tr><td><b>BĐS đầu tư &amp; đang xây dựng</b></td><td>35.559 tỷ (Q2/26)</td><td>Tăng đều &gt;1.500 tỷ/quý — cọc đang thành tài sản</td><td>Đi ngang trong khi cọc tăng</td><td class="mini">BCTC quý</td></tr>
+      <tr><td><b>Lưu lượng khách like-for-like</b></td><td class="dn">Chưa công bố</td><td>VRE bắt đầu công bố — bản thân sự minh bạch là tín hiệu tốt</td><td>Tiếp tục không công bố khi Aeon mở thêm điểm</td><td class="mini">Cần yêu cầu ở IR</td></tr>
+      <tr><td><b>Doanh thu chuyển nhượng BĐS</b></td><td>KH 2026 chỉ 413 tỷ</td><td>Royal Island / Golden Avenue bắt đầu bàn giao</td><td>Tiếp tục trượt sang 2028</td><td class="mini">BCTC quý</td></tr>
+      <tr><td><b>Cổ tức tiền mặt</b></td><td>1.000đ/cp · trả Q3/26</td><td>Duy trì hoặc tăng, tài trợ bằng CFO dương</td><td>Cắt giảm, hoặc tiếp tục tài trợ bằng bán tài sản</td><td class="mini">CBTT</td></tr>
+    </tbody></table></div>
+
+  <h2 class="sec">Khung kịch bản · thay cho một con số mục tiêu duy nhất</h2>
+  <div class="grid g3">
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Kịch bản xấu</div><div style="margin:8px 0"><span class="tag t4">Điều gì phải xảy ra</span></div><p style="font-size:12px;margin:0">Lấp đầy chững lại rồi giảm khi nguồn cung Hà Nội tăng và Aeon mở thêm điểm; Vincom Plaza tỉnh lẻ rơi dưới 83%. Dòng tiền hoạt động tiếp tục âm sang 2027. Khoản đặt cọc không chuyển hóa thành mặt bằng đúng tiến độ, buộc phải trích lập hoặc kéo dài. Lãi suất giảm kéo lợi nhuận tài chính đi xuống, làm lộ ra mức lợi nhuận lõi thật.</p><div class="mini" style="margin-top:8px"><b>Nhận biết sớm:</b> lấp đầy giảm hai quý liên tiếp; CFO 6T2026 vẫn âm; số dư đặt cọc tăng mà BĐS đầu tư đi ngang.</div></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Kịch bản cơ sở</div><div style="margin:8px 0"><span class="tag t3">Điều gì phải xảy ra</span></div><p style="font-size:12px;margin:0">Hoàn thành kế hoạch 2026 (10.132 tỷ doanh thu, 5.375 tỷ LNST — 6T đã đạt 59,8% mục tiêu lợi nhuận). Lấp đầy giữ vùng 88–90%, giá thuê tăng 5–7%/năm khi tái ký. Pipeline ~214.000 m² Mega Mall vào vận hành rải 2027–2028. Cổ tức tiền mặt duy trì. Lợi nhuận 2026 <i>giảm</i> so với 2025 do nền cao — nhưng lợi nhuận lõi vẫn tăng hai chữ số.</p><div class="mini" style="margin-top:8px"><b>Nhận biết sớm:</b> Đan Phượng vận hành đúng kỳ vọng (lấp đầy 93% trước khai trương là dấu hiệu tốt); Q3/2026 lấp đầy quay lại xu hướng tăng.</div></div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700">Kịch bản tốt</div><div style="margin:8px 0"><span class="tag t1">Điều gì phải xảy ra</span></div><p style="font-size:12px;margin:0">Khoản đặt cọc chuyển hóa nhanh thành Mega Mall, đưa GFA tăng vượt +11% và dòng tiền hoạt động về dương bền vững. Mảng shophouse Royal Island và Golden Avenue bắt đầu bàn giao, bổ sung lợi nhuận 2027–2028. Khung pháp lý REIT hoàn thiện, VRE đưa các TTTM ổn định vào REIT — biến giá trị ẩn thành giá trị quan sát được và kéo mức chiết khấu P/B thu hẹp.</p><div class="mini" style="margin-top:8px"><b>Nhận biết sớm:</b> VRE công bố lịch khai trương cụ thể từng Mega Mall; công bố traffic like-for-like; có CBTT về cấu trúc REIT.</div></div>
+  </div>
+  <div class="note g"><b>Cách dùng khung này.</b> Với một doanh nghiệp mà ~31% lợi nhuận đến từ hoạt động tài chính với bên liên quan, ~41% tài sản nằm ở khoản đặt cọc chưa đối chiếu được, và dòng tiền hoạt động âm ba năm — việc chốt một con số giá mục tiêu duy nhất là tự đánh lừa về độ chính xác. Cách làm thực tế hơn: gán xác suất cho ba kịch bản, theo dõi bộ chỉ số quý ở bảng trên, và điều chỉnh trọng số khi dữ liệu mới xuất hiện.<br><br><b>Một điểm khác biệt quan trọng so với hồ sơ VHM.</b> Ở VHM, rủi ro là <i>khả năng thanh toán</i> — nợ phải trả tăng 55% trong sáu tháng, cam kết hạ tầng bằng 46% vốn chủ. Ở VRE, với nợ ròng 1,1% vốn chủ và EBIT/lãi vay 6,2 lần, <b>rủi ro không phải sống sót mà là hiệu quả sử dụng vốn</b>: liệu 41% bảng cân đối đang nằm ở khoản đặt cọc có tạo ra lợi suất xứng đáng không. Đó là một loại rủi ro dễ chịu hơn nhiều — nhưng cũng khó nhìn thấy hơn, vì nó không bao giờ tạo ra một cuộc khủng hoảng, chỉ tạo ra nhiều năm ROE thấp hơn mức đáng lẽ phải có.</div>
+</section>
+
+<!-- ============ 11 NGUỒN ============ -->
+<section id="sr" class="tab">
+  <h2 class="sec">Phân tầng nguồn dữ liệu</h2>
+  <div class="card">
+    <div class="q"><div class="n g">1</div><div><h4><span class="tag t1">TIER 1</span> &nbsp;VRE / BCTC / công bố thông tin / ĐHĐCĐ / Earnings Presentation</h4><p>Dùng cho: số liệu tài chính thực tế, tỷ lệ lấp đầy, lưu lượng khách, số TTTM và GFA theo mô hình, kế hoạch năm, cổ tức, lịch khai trương. Đây là loại số duy nhất được phép đưa vào mô hình mà không cần chú thích thêm.</p></div></div>
+    <div class="q"><div class="n">2</div><div><h4><span class="tag t2">TIER 2</span> &nbsp;Đơn vị nghiên cứu thị trường BĐS &amp; cơ quan thống kê</h4><p>CBRE, Savills, Cushman &amp; Wakefield cho nguồn cung, giá thuê và lấp đầy toàn thị trường; Tổng cục Thống kê cho bán lẻ và GDP. Đây là dữ liệu ngành đáng tin, nhưng <b>không phải số của VRE</b> — dùng làm nền so sánh, không dùng để suy ra kết quả của doanh nghiệp.</p></div></div>
+    <div class="q"><div class="n y">3</div><div><h4><span class="tag t3">TIER 3</span> &nbsp;Báo cáo mới nhất của từng CTCK · và tính toán của tôi</h4><p>Dùng khi doanh nghiệp không công bố. Luôn gắn tên CTCK + ngày + nhãn "ước tính". Nguyên tắc: <b>mỗi CTCK chỉ lấy một báo cáo mới nhất</b>, không trộn số cũ và mới của cùng một đơn vị — và <b>khi kế hoạch chính thức của doanh nghiệp mâu thuẫn với dự phóng cũ của CTCK thì kế hoạch doanh nghiệp thắng</b> (xem trường hợp MBS 13.759 tỷ so với KH 10.132 tỷ ở tab 06).</p></div></div>
+    <div class="q"><div class="n r">4</div><div><h4><span class="tag t4">TIER 4</span> &nbsp;Báo chí tài chính · dữ liệu giá từ nền tảng quốc tế</h4><p>Dùng cho: các con số trích từ BCTC nhưng qua trung gian báo chí (đặc biệt là toàn bộ số liệu về khoản đặt cọc bên liên quan), giá cổ phiếu, tin giao dịch. <b>Không nâng lên thành sự thật chính thức.</b> Lưu ý đặc biệt: dữ liệu giá và vốn hóa từ các nền tảng quốc tế thường lệch nhau và cập nhật chậm — luôn đối chiếu HOSE.</p></div></div>
+  </div>
+
+  <h2 class="sec">Danh mục nguồn đã dùng</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Nguồn</th><th>Ngày / kỳ</th><th>Dùng cho</th><th>Tier</th><th>Link</th></tr></thead>
+    <tbody id="srcTbl"></tbody></table></div>
+
+  <h2 class="sec">Những gì cố ý để trống</h2>
+  <div class="note r"><b>VRE không công bố — nên để trống hoặc ghi rõ là ước tính:</b> (1) <b>doanh thu, NOI và lợi nhuận theo từng TTTM</b> — kể cả cho các Mega Mall lớn nhất; (2) <b>lưu lượng khách like-for-like</b> tại các trung tâm hiện hữu, tách khỏi phần mở mới; (3) <b>giá thuê bình quân trên m²</b> và mức tăng khi tái ký (rental reversion); (4) <b>cơ cấu ngành hàng khách thuê</b> theo diện tích — F&amp;B, thời trang, giải trí, dịch vụ; (5) <b>lịch đáo hạn hợp đồng thuê theo năm</b> — khoảng trống nghiêm trọng nhất, vì các REIT khu vực đều công bố; (6) <b>tỷ lệ khách thuê rời đi (churn)</b>; (7) <b>lãi suất, kỳ hạn và điều kiện hoàn trả của khoản đặt cọc với VIC/VHM</b> — biến số quan trọng nhất của cả hồ sơ; (8) <b>lịch khai trương cụ thể của từng Mega Mall</b> trong pipeline 214.000 m²; (9) tách chi tiết doanh thu hoạt động tài chính giữa lãi tiền gửi và lãi cọc bên liên quan.<br><br><b>Là ước tính hoặc tính toán của tôi, không phải số doanh nghiệp công bố</b> — và được gắn nhãn rõ ở nơi xuất hiện: toàn bộ chỉ số năng suất trên mỗi m² (tab 02); diện tích trống theo mô hình (tab 02, 03); LNST chuẩn hóa (tab 04); phép tính lãi suất ngụ ý của lợi nhuận tài chính (tab 04); đơn giá đặt cọc trên mỗi m² (tab 05); đóng góp EBITDA của pipeline (tab 06); toàn bộ mô hình định giá cap rate (tab 09).<br><br><b>Mâu thuẫn số liệu đã ghi nhận thay vì che đi:</b> (a) số dư đặt cọc 24.895 tỷ không đối chiếu được với cấu trúc bảng cân đối cuối 2025 (tab 05); (b) số ngày phải thu — TCBS ghi ~188 ngày trong phần diễn giải nhưng 62 ngày trong bảng mô hình (tab 08); (c) tỷ trọng thương mại điện tử — cùng báo cáo TCBS ghi ~12% ở phần ngành và ~20% ở phần rủi ro (tab 03); (d) số cổ phiếu — 2.328,8 triệu theo vốn điều lệ so với 2.272,3 triệu đang lưu hành (tab 01); (e) dự phóng doanh thu 2026 — MBS 13.759 tỷ so với kế hoạch doanh nghiệp 10.132 tỷ (tab 06).<br><br>Nguyên tắc xuyên suốt, giống dashboard VHM: <b>"chưa công bố" là câu trả lời trung thực hơn một con số ước đoán trông có vẻ chính xác</b> — nhưng một ước tính <i>được nói rõ là ước tính, kèm phương pháp và độ tin cậy</i> thì hữu ích hơn một ô trống. Và khi hai nguồn đáng tin mâu thuẫn nhau, <b>ghi lại mâu thuẫn là thông tin; chọn bừa một số là đánh mất thông tin</b>.</div>
+
+  <h2 class="sec">Khuyến nghị vận hành dashboard</h2>
+  <div class="grid g2">
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Nhịp cập nhật đề xuất</div>
+      <div class="kv"><span>Sau mỗi BCTC quý</span><b>KPI tab 01 + toàn bộ tab 03, 04</b></div>
+      <div class="kv"><span>Sau BCTC bán niên soát xét</span><b>Tab 05 (đặt cọc, bên liên quan) + tab 08 (dòng tiền)</b></div>
+      <div class="kv"><span>Sau Earnings Presentation năm</span><b>Tab 02 (lấp đầy &amp; GFA theo mô hình)</b></div>
+      <div class="kv"><span>Khi có CBTT khai trương TTTM</span><b>Tab 06 (Gantt pipeline)</b></div>
+      <div class="kv"><span>Khi có báo cáo CTCK mới</span><b>Thay báo cáo cũ cùng CTCK, không cộng dồn</b></div>
+      <div class="kv"><span>Hàng quý</span><b>Số liệu nguồn cung &amp; giá thuê của CBRE/Savills</b></div>
+    </div>
+    <div class="card"><div class="lab" style="font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:6px">Ba quy tắc giữ dashboard đáng tin</div>
+      <p style="font-size:12px;margin:0 0 8px"><b>Một, không lấp khoảng trống.</b> Nếu không có số mới, để "chưa công bố" thay vì dùng số cũ. Số cũ được trình bày như số hiện tại là dạng sai lệch nguy hiểm nhất vì nó trông giống dữ liệu thật.</p>
+      <p style="font-size:12px;margin:0 0 8px"><b>Hai, mỗi ô số phải trả lời được "số này từ đâu".</b> Nếu không truy được nguồn trong 10 giây thì ô đó chưa đủ điều kiện tồn tại trên dashboard.</p>
+      <p style="font-size:12px;margin:0"><b>Ba, phân biệt ba lớp: sự thật, ước tính, và diễn giải.</b> Sự thật là số doanh nghiệp công bố. Ước tính là số tôi hoặc CTCK dựng lại. Diễn giải là phần bình luận trong các khối màu — đó là quan điểm, và quan điểm cần được đọc như quan điểm.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <b>FinSuccess · VRE Investment Dashboard</b> · Dữ liệu chốt 07/09/2026 · Xây dựng từ BCTC &amp; công bố thông tin của Vincom Retail, Earnings Presentation, nghị quyết ĐHĐCĐ 23/04/2026, báo cáo TCBS Research (06 &amp; 07/2026) và MBS Research (10/2025), dữ liệu thị trường CBRE/Savills/Cushman &amp; Wakefield, Tổng cục Thống kê và báo chí tài chính.<br>
+  Tài liệu phục vụ mục đích nghiên cứu và tổng hợp thông tin. Không phải khuyến nghị mua bán chứng khoán. Người đọc tự chịu trách nhiệm với quyết định đầu tư của mình và nên kiểm chứng lại các số liệu từ nguồn gốc trước khi sử dụng.
+  <button class="btn" style="float:right" onclick="printAll()">⬇ Xuất PDF</button>
+</footer>
+
+<script>
+const SRC=[
+["VRE · Báo cáo cập nhật KQKD Quý II/2026 (TCBS Research)","29/07/2026","Toàn bộ số Q2/2026: doanh thu, biên gộp, LN tài chính, LNTT/LNST, lấp đầy, bảng cân đối, phụ lục BCTC theo quý, mô hình dự phóng 2021–2030","T3","https://finance.vietstock.vn/downloadedoc/21438"],
+["VRE · Báo cáo phân tích lần đầu (TCBS Research)","09/06/2026","Hồ sơ doanh nghiệp, danh mục 90 TTTM theo 4 mô hình, GFA &amp; lấp đầy &amp; footfall theo mô hình, bóc tách lợi nhuận lõi 3.893 tỷ, dòng tiền, định giá, so sánh peer quốc tế","T3","https://www.tcbs.com.vn/wp-content/uploads/2026/06/VRE_Bao_cao_phan_tich_chi_tiet_VI.pdf"],
+["MBS Research · Báo cáo cổ phiếu VRE","03/10/2025","Mô hình định giá cap rate 8,0% (chi tiết Rf/Beta/ERP/g), chi tiết hai dự án shophouse Royal Island &amp; Golden Avenue, đặt cọc đảm bảo GFA 800.000 m², TP 36.500đ","T3","https://www.mbs.com.vn/files/uploads/2025/10/VRE_BCPT_20251003.pdf"],
+["Vincom Retail lãi hơn 1.600 tỷ quý 2, hoàn thành gần 60% kế hoạch năm (Mekong Asean)","29/07/2026","Doanh thu thuần 6T 4.667 tỷ, tổng tài sản 62.806 tỷ, tiền 5.708 tỷ, nợ vay 6.406 tỷ, tiến độ kế hoạch","T4","https://mekongasean.vn/vincom-retail-lai-hon-1600-ty-dong-quy-2-hoan-thanh-gan-60-ke-hoach-nam-57859.html"],
+["Vincom Retail báo lãi sau thuế quý 2/2026 hơn 1.600 tỉ đồng, tăng 30% (Thanh Niên)","29/07/2026","Xác nhận chéo số liệu Q2/2026, tỷ lệ lấp đầy 88,6%","T4","https://thanhnien.vn/vincom-retail-bao-lai-sau-thue-quy-2-2026-hon-1600-ti-dong-tang-30-185260729164304609.htm"],
+["ĐHĐCĐ Vincom Retail 2026: Kế hoạch lãi 5.375 tỷ, chốt cổ tức tiền mặt 10% (Báo Pháp Luật VN)","23/04/2026","Kế hoạch 2026: DTT 10.132 tỷ, cho thuê 9.719 tỷ, chuyển nhượng BĐS 413 tỷ, LNST 5.375 tỷ, cổ tức 1.000đ/cp ~2.272 tỷ trả Q3/2026; phát biểu Chủ tịch về 12% dư địa lấp đầy","T1","https://baophapluat.vn/dhdcd-vincom-retail-vre-2026-ke-hoach-lai-5-375-ty-dong-chot-chia-co-tuc-tien-mat-ty-le-10.html"],
+["Vincom Retail (VRE) đặt mục tiêu doanh thu 10.132 tỷ đồng năm 2026 (Tin nhanh Chứng khoán)","04/2026","Xác nhận chéo kế hoạch 2026 và cơ cấu doanh thu theo mảng","T4","https://www.tinnhanhchungkhoan.vn/vincom-retail-vre-dat-muc-tieu-doanh-thu-10132-ty-dong-nam-2026-post388253.html"],
+["Vincom Retail nối lại việc chia cổ tức bằng tiền mặt sau 6 năm (Mekong Asean)","2026","Bối cảnh chính sách cổ tức, quy mô chi trả","T4","https://mekongasean.vn/vincom-retail-noi-lai-viec-chia-co-tuc-bang-tien-mat-sau-6-nam-54302.html"],
+["Vincom Retail chốt ngày nhận cổ tức 10% bằng tiền (VietnamBiz)","18/06/2026","Ngày chốt quyền, giá trị chi trả","T4","https://vietnambiz.vn/vincom-retail-chot-ngay-nhan-co-tuc-10-bang-tien-20266187182348.htm"],
+["VRE đặt cọc hơn 16.000 tỷ đồng cho loạt thương vụ hợp tác với Vingroup (Người Quan Sát)","08/2025","Số dư đặt cọc 30/06/2025: 5.590 tỷ ngắn hạn + 10.573 tỷ dài hạn; các dự án Royal Island, Golden Avenue, Green Paradise. Nguồn gốc: BCTC Q2/2025 của Vingroup","T4","https://nguoiquansat.vn/vincom-retail-vre-dat-coc-hon-16-000-ty-dong-cho-loat-thuong-vu-hop-tac-voi-vingroup-236386.html"],
+["Sau 2 quý cạn hàng để bán, VRE đã đặt cọc hơn 3.000 tỷ cho Vingroup, Vinhomes (DNSE)","2024","Cấu trúc khoản đặt cọc 30/09/2024: 11.180 tỷ BCC + 3.040 tỷ đặt cọc cấu phần thương mại dịch vụ","T4","https://www.dnse.com.vn/senses/tin-tuc/sau-2-quy-can-hang-e-ban-vincom-retail-a-at-coc-hon-3000-ty-cho-vingroup-vinhomes-e-mua-cac-shophouse-tai-vu-yen-va-quang-ninh-34019316"],
+["VRE mở thêm 3 TTTM trong 2025, chuẩn bị đón lợi nhuận từ 2 dự án shophouse (DNSE)","2025","Số dư đặt cọc cuối 2025 ~24.895 tỷ, trong đó 14.512 tỷ cho 764.000 m² sàn TTTM; kế hoạch shophouse Royal Island 85.600 m² &amp; Golden Avenue 24.200 m²","T4","https://www.dnse.com.vn/senses/tin-tuc/vincom-retail-vre-mo-them-3-tttm-trong-nam-2025-chuan-bi-on-loi-nhuan-tu-2-du-an-shophouse-34019779"],
+["Lộ diện chủ nhân mới của Vincom Retail sau khi Vingroup thoái vốn (Tạp chí Công Thương)","2024–2026","Cơ cấu sở hữu: Sado 40,5% (Nguyễn Hoài Nam nắm 90%, TGĐ Berjaya Việt Nam), Vingroup 18,8%; VRE không còn là công ty con của Vingroup","T4","https://tapchicongthuong.vn/lo-dien-chu-nhan-moi-cua-vincom-retail--vre--sau-khi-tap-doan-vingroup-thoai-von-119296.htm"],
+["Vingroup đã nhận đủ 1,54 tỷ USD từ việc thoái vốn khỏi Vincom Retail (Tạp chí Công Thương)","2024","Quy mô và tiến độ thương vụ thoái vốn SDI","T4","https://tapchicongthuong.vn/tap-doan-vingroup--vic--da-nhan-du-1-54-ty-usd-tu-viec-thoai-von-khoi-vincom-retail--vre-129534.htm"],
+["Phân tích cổ phiếu VRE 2026: Lợi nhuận kỷ lục từ thương vụ tỷ đô (Finhay)","2026","Chi tiết khoản lãi ~1.891 tỷ từ chuyển nhượng Vincom Center Nguyễn Chí Thanh; doanh thu tài chính Q4/2025 đạt 2.647 tỷ (gấp 4,8 lần); cảnh báo shophouse trượt sang 2027","T4","https://www.finhay.com.vn/co-phieu-vre"],
+["Cổ phiếu Vincom Retail \"có biến\" (CafeBiz)","29/07/2026","Diễn biến giá: đỉnh ~35.000đ đầu T5/2026 → đáy sát 21.000đ cuối T7 (−40%); phiên trần 29/07 lên 22.750đ, vốn hóa ~51.700 tỷ, KLGD 8,3 triệu cp","T4","https://cafebiz.vn/co-phieu-vincom-retail-co-bien-176260729160034874.chn"],
+["Chính thức khai trương TTTM Vincom Plaza Đan Phượng (An Ninh Thủ Đô)","28/08/2026","TTTM thứ 91, ~27.000 m², 5 tầng nổi 1 hầm, tại trung tâm Vinhomes Wonder City phía Tây Hà Nội","T4","https://anninhthudo.vn/chinh-thuc-khai-truong-trung-tam-thuong-mai-vincom-plaza-dan-phuong-post665013.antd"],
+["VRE mở trung tâm thương mại thứ 91 với quy mô gần 27.000 m² tại Hà Nội (Người Quan Sát)","08/2026","Xác nhận chéo quy mô và vị trí Vincom Plaza Đan Phượng","T4","https://nguoiquansat.vn/vincom-retail-vre-mo-trung-tam-thuong-mai-thu-91-voi-quy-mo-gan-27-000m2-tai-ha-noi-313255.html"],
+["Khai trương Vincom Mega Mall Royal Island (Tập đoàn Vingroup)","10/2025","TTTM thứ 90, hơn 55.000 m², 4 tầng nổi 2 hầm, tại Vũ Yên – Hải Phòng","T2","https://vingroup.net/tin-tuc-su-kien/bai-viet/3644/khai-truong-vincom-mega-mall-royal-island-bieu-tuong-mua-sam-am-thuc-giai-tri-moi-tai-hai-phong"],
+["Khai trương Vincom Mega Mall Ocean City (Tuổi Trẻ)","22/08/2025","Quy mô gần 70.000 m² sàn bán lẻ","T4","https://tuoitre.vn/chinh-thuc-khai-truong-trung-tam-thuong-mai-vincom-mega-mall-ocean-city-20251003214845789.htm"],
+["Vincom Retail · Website chính thức hệ thống TTTM","2026","Danh mục và thông tin từng TTTM theo bốn mô hình","T2","https://vincom.com.vn/"],
+["Cổ phiếu VRE: Tổng quan, định giá và phân tích (DSC)","06/2026","Dữ liệu giao dịch tham chiếu: vốn hóa, SLCP niêm yết 2.328.818.410, sở hữu nước ngoài, BVPS 21.993đ, P/B so với bình quân 5 năm và ngành","T4","https://www.dsc.com.vn/kien-thuc/co-phieu-vre-tong-quan-danh-gia-va-ket-qua-kinh-doanh-moi-nhat"],
+["VRE · VietstockFinance","2026","Dữ liệu giá, chỉ số cơ bản, lịch sử công bố thông tin","T4","https://finance.vietstock.vn/VRE-ctcp-vincom-retail.htm"],
+["VRE · Dữ liệu HOSE (CafeF)","2026","Giá đóng cửa và khối lượng theo phiên — nguồn cần dùng để cập nhật lại mọi chỉ số định giá tại ngày sử dụng","T4","https://cafef.vn/du-lieu/hose/vre-cong-ty-co-phan-vincom-retail.chn"]
+];
+
+/* ===== Gantt pipeline 2026–2030 · 20 quý, index 0 = 2026Q1 ===== */
+const GANTT=[
+ ["grp","TTTM ĐANG VẬN HÀNH · 90 TRUNG TÂM ĐẦU KỲ",""],
+ ["Danh mục hiện hữu","~1.914.400 m² GFA · 31/34 tỉnh",[["open",0,19,"Vận hành · lấp đầy 88,6% · tăng giá thuê ~5–7%/năm khi tái ký",0]]],
+ ["VMM Ocean City","Hưng Yên · ~70.000 m² · mở 22/08/2025",[["open",0,19,"Đóng góp đủ kỳ đầu tiên trong 2026",0]]],
+ ["VMM Royal Island","Hải Phòng · &gt;55.000 m² · mở T10/2025",[["open",0,19,"Đóng góp đủ kỳ đầu tiên trong 2026 · TTTM thứ 90",0]]],
+
+ ["grp","KHAI TRƯƠNG MỚI · TĂNG DIỆN TÍCH SÀN",""],
+ ["Vincom Plaza Đan Phượng","Hà Nội · ~27.000 m² · Vinhomes Wonder City",[["cons",0,2,"Hoàn thiện",0],["open",2,19,"Khai trương 28/08/2026 · lấp đầy 93% trước mở cửa · TTTM thứ 91",0]]],
+ ["Pipeline Mega Mall · đợt 1","Đại đô thị Vinhomes · 50.000–120.000 m²",[["cons",2,6,"Xây dựng",1],["open",7,19,"Khai trương ước 2027 · lịch cụ thể chưa công bố",1]]],
+ ["Pipeline Mega Mall · đợt 2","Grand Park / Ocean Park / Smart City",[["cons",4,10,"Xây dựng",1],["open",11,19,"Khai trương ước 2028 · lịch cụ thể chưa công bố",1]]],
+ ["Nâng cấp tài sản hiện hữu","VCP Đà Nẵng → Vincom Center · VCP Hạ Long cải tạo",[["cons",1,7,"Nâng cấp · tăng giá thuê không cần thêm m²",1]]],
+
+ ["grp","MẢNG SHOPHOUSE · DOANH THU MỘT LẦN",""],
+ ["Vinhomes Royal Island","Hải Phòng · 85.600 m² NSA · ~1.000 SP · CP 4.800 tỷ",[["dep",0,3,"MBS kỳ vọng bàn giao từ 2026 — KH 2026 của VRE không phản ánh",1],["shop",4,11,"Bàn giao ước 2027–2028 · đã trượt lịch",1]]],
+ ["Vinhomes Golden Avenue","Quảng Ninh · 24.200 m² NSA · ~280 SP · CP 1.300 tỷ",[["dep",0,3,"Tương tự — chưa vào KH 2026",1],["shop",4,11,"Bàn giao ước 2027–2028",1]]],
+ ["Vinhomes Green Paradise","Cần Giờ, TP.HCM · đã đặt cọc",[["dep",0,11,"Đã đặt cọc · quy mô &amp; lịch chưa công bố · MBS chưa đưa vào dự phóng",1]]],
+
+ ["grp","KHOẢN ĐẶT CỌC · CHUYỂN HÓA THÀNH TÀI SẢN VẬN HÀNH",""],
+ ["764.000 m² đã đặt cọc","14.512 tỷ đồng · ~19,0 tr đ/m²",[["dep",0,19,"Chuyển hóa dần thành BĐS đầu tư · KHÔNG CÓ LỊCH CÔNG BỐ · biến số lớn nhất của hồ sơ",1]]],
+ ["Phần còn lại của khoản đặt cọc","~10.400 tỷ · shophouse &amp; cấu phần khác",[["dep",0,15,"Cấu trúc chưa đối chiếu được với bảng cân đối — xem tab 05",1]]]
+];
+
+function drawGantt(){
+ const el=document.getElementById('gantt'); if(!el)return;
+ const W=q=>(q/20*100), lane={open:0,cons:1,shop:1,dep:2};
+ let h='<div class="grow hdr"><div class="glab">Cấu phần</div><div class="gtrack">'+
+   [2026,2027,2028,2029,2030].map(y=>`<div class="gy">${y}<small>Q1 · Q2 · Q3 · Q4</small></div>`).join('')+'</div></div>';
+ GANTT.forEach(r=>{
+  if(r[0]==='grp'){h+=`<div class="grow grp"><div class="glab">${r[1]}</div><div class="gtrack" style="height:26px"></div></div>`;return;}
+  const segs=r[2].map(s=>{
+   const left=W(s[1]), wid=W(s[2]-s[1]+1);
+   return `<div class="gs ${s[0]}${s[4]?' est':''}" style="left:${left}%;width:calc(${wid}% - 3px);top:${lane[s[0]]*15+2}px" title="${s[3].replace(/<[^>]*>/g,'')}">${s[3]}</div>`;
+  }).join('');
+  h+=`<div class="grow"><div class="glab"><b>${r[0]}</b><i>${r[1]}</i></div><div class="gtrack">${segs}<div class="gnow" style="left:13.6%"></div></div></div>`;
+ });
+ el.innerHTML=h;
+}
+
+/* ===== Mô hình định giá cap rate ===== */
+const SH=2272.3;            // triệu cp đang lưu hành
+const CASH=5843, DEBT=6406, DEPOSIT=14512;
+const nf=n=>n.toLocaleString('vi-VN',{maximumFractionDigits:0});
+function calcNav(){
+ const noi=+document.getElementById('rNoi').value;
+ const cap=+document.getElementById('rCap').value/10;
+ const dep=+document.getElementById('rDep').value;
+ const dev=+document.getElementById('rDev').value;
+ document.getElementById('lNoi').textContent=nf(noi);
+ document.getElementById('lCap').textContent=cap.toFixed(1).replace('.',',')+'%';
+ document.getElementById('lDep').textContent=dep+'%';
+ document.getElementById('lDev').textContent=nf(dev);
+ const rentVal=noi/(cap/100);
+ const depVal=DEPOSIT*dep/100;
+ const ev=rentVal+CASH+depVal+dev-DEBT;
+ const ps=ev/SH*1000;
+ document.getElementById('navTbl').innerHTML=
+  `<tr><td>Giá trị mảng cho thuê <span class="mini">= NOI ${nf(noi)} ÷ cap ${cap.toFixed(1).replace('.',',')}%</span></td><td style="text-align:right"><b>${nf(rentVal)}</b></td></tr>`+
+  `<tr><td>+ Tiền &amp; tiền gửi có kỳ hạn <span class="mini">30/06/2026</span></td><td style="text-align:right">${nf(CASH)}</td></tr>`+
+  `<tr><td>+ Khoản đặt cọc thu hồi được <span class="mini">= 14.512 × ${dep}%</span></td><td style="text-align:right">${nf(depVal)}</td></tr>`+
+  `<tr><td>+ Giá trị mảng shophouse</td><td style="text-align:right">${nf(dev)}</td></tr>`+
+  `<tr><td>− Vay &amp; trái phiếu <span class="mini">30/06/2026</span></td><td style="text-align:right">(${nf(DEBT)})</td></tr>`+
+  `<tr style="background:#eef1f8;font-weight:800"><td>= Giá trị vốn chủ sở hữu</td><td style="text-align:right">${nf(ev)}</td></tr>`+
+  `<tr><td class="mini">÷ Số cổ phiếu đang lưu hành</td><td style="text-align:right" class="mini">2.272,3 triệu cp</td></tr>`;
+ document.getElementById('navPs').textContent=nf(Math.round(ps/50)*50)+'đ';
+ const mid=24000, d=(ps-mid)/mid*100;
+ document.getElementById('navVs').textContent=(d>=0?'Cao hơn ':'Thấp hơn ')+Math.abs(d).toFixed(0)+'% so với vùng giá thị trường ~24.000đ';
+}
+function setScn(n,c,d,v){
+ document.getElementById('rNoi').value=n; document.getElementById('rCap').value=c;
+ document.getElementById('rDep').value=d; document.getElementById('rDev').value=v; calcNav();
+}
+
+document.getElementById('srcTbl').innerHTML=SRC.map(s=>`<tr><td><b>${s[0]}</b></td><td>${s[1]}</td><td class="mini">${s[2]}</td><td><span class="tag ${s[3].toLowerCase()}">${s[3]}</span></td><td><a href="${s[4]}" target="_blank" rel="noopener" style="color:var(--blue)">Mở nguồn</a></td></tr>`).join('');
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); document.getElementById(b.dataset.t).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+const NAVY='#201D5E',GREEN='#82BC28',PURPLE='#9E2FB0',GOLD='#F3A712',BLUE='#2E75B6',RED='#D64545',GREY='#c7cedb';
+function mkCharts(){
+ if(typeof Chart==='undefined')return;
+ Chart.defaults.font.family="Inter, system-ui, sans-serif";
+ Chart.defaults.font.size=11; Chart.defaults.color='#6b7789';
+ const noG={legend:{display:false}}, R={responsive:true,maintainAspectRatio:false};
+
+ // 02 · GFA & số lượng theo mô hình
+ new Chart(document.getElementById('cFmt'),{type:'bar',data:{
+  labels:['Vincom Center','Vincom Mega Mall','Vincom Plaza','Vincom+'],
+  datasets:[
+   {label:'GFA (nghìn m²)',data:[233.4,657.9,951.1,72.0],backgroundColor:NAVY,yAxisID:'y',borderRadius:4},
+   {label:'Số TTTM',data:[6,8,61,15],backgroundColor:GREEN,yAxisID:'y1',borderRadius:4}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{
+   y:{title:{display:true,text:'nghìn m² GFA'}},
+   y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'số TTTM'}}}}});
+
+ // 03 · lấp đầy theo quý
+ new Chart(document.getElementById('cOcc'),{type:'line',data:{
+  labels:['Q1/24','Q2/24','Q3/24','Q4/24','Q1/25','Q2/25','Q3/25','Q4/25','Q1/26','Q2/26'],
+  datasets:[{label:'Lấp đầy toàn hệ thống (%)',data:[82.8,84.0,84.9,85.6,86.1,86.3,87.2,88.1,88.9,88.6],
+   borderColor:NAVY,backgroundColor:'rgba(32,29,94,.08)',fill:true,tension:.3,pointRadius:3,pointBackgroundColor:NAVY}]},
+  options:{...R,plugins:noG,scales:{y:{min:80,max:92,title:{display:true,text:'%'}}}}});
+
+ // 03 · doanh thu & biên gộp theo quý
+ new Chart(document.getElementById('cRev'),{data:{
+  labels:['Q2/25','Q3/25','Q4/25','Q1/26','Q2/26'],
+  datasets:[
+   {type:'bar',label:'Tổng doanh thu (tỷ đ)',data:[2143,2251,2312,2294,2374],backgroundColor:BLUE,yAxisID:'y',borderRadius:4},
+   {type:'line',label:'Biên lợi nhuận gộp (%)',data:[55.2,50.5,52.3,54.7,58.9],borderColor:GREEN,backgroundColor:GREEN,yAxisID:'y1',tension:.3,pointRadius:4,borderWidth:3}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{
+   y:{title:{display:true,text:'tỷ đồng'},min:1800},
+   y1:{position:'right',min:45,max:62,grid:{drawOnChartArea:false},title:{display:true,text:'%'}}}}});
+
+ // 04 · lợi nhuận lõi vs báo cáo
+ new Chart(document.getElementById('cCore'),{data:{
+  labels:['2021','2022','2023','2024','2025'],
+  datasets:[
+   {type:'bar',label:'LNTT báo cáo (tỷ đ)',data:[1644,3470,5511,5132,8083],backgroundColor:GREY,borderRadius:4},
+   {type:'bar',label:'LN từ hoạt động cho thuê (lõi)',data:[null,null,null,3773,3893],backgroundColor:GREEN,borderRadius:4},
+   {type:'line',label:'Phần KHÔNG đến từ cho thuê',data:[null,null,null,1359,4190],borderColor:RED,backgroundColor:RED,tension:.3,pointRadius:5,borderWidth:3,borderDash:[5,4]}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'tỷ đồng'}}}}});
+
+ // 04 · LNST theo quý
+ new Chart(document.getElementById('cQtr'),{type:'bar',data:{
+  labels:['Q2/25','Q3/25','Q4/25','Q1/26','Q2/26'],
+  datasets:[{label:'LNST (tỷ đ)',data:[1233,1376,2659,1606,1609],
+   backgroundColor:[NAVY,NAVY,RED,GOLD,GREEN],borderRadius:4}]},
+  options:{...R,plugins:noG,scales:{y:{title:{display:true,text:'tỷ đồng'}}}}});
+
+ // 05 · cơ cấu sở hữu
+ new Chart(document.getElementById('cOwn'),{type:'doughnut',data:{
+  labels:['Sado 40,5%','Vingroup 18,4%','Cổ đông khác 28,8%','Cổ đông ngoại 12,3%'],
+  datasets:[{data:[40.5,18.4,28.8,12.3],backgroundColor:[NAVY,PURPLE,GREY,BLUE],borderWidth:2,borderColor:'#fff'}]},
+  options:{...R,plugins:{legend:{position:'bottom',labels:{boxWidth:11,font:{size:10}}}},cutout:'55%'}});
+
+ // 06 · GFA theo năm
+ new Chart(document.getElementById('cGfa'),{type:'bar',data:{
+  labels:['2023','2024','2025','2026','2027E','2028E'],
+  datasets:[
+   {label:'GFA đang vận hành (triệu m²)',data:[1.75,1.79,1.914,1.941,1.941,1.941],backgroundColor:NAVY,borderRadius:4,stack:'a'},
+   {label:'Pipeline đã công bố · phân bổ suy luận',data:[null,null,null,null,0.107,0.107],backgroundColor:'rgba(130,188,40,.55)',borderRadius:4,stack:'a'}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'triệu m² GFA'},min:1.5}}}});
+
+ // 08 · EBITDA vs FCF
+ new Chart(document.getElementById('cFcf'),{data:{
+  labels:['2021','2022','2023','2024','2025','2026F','2027F','2028F','2029F','2030F'],
+  datasets:[
+   {type:'bar',label:'EBITDA (tỷ đ)',data:[3250,4725,6020,5152,5274,6718,7425,8181,9020,9946],backgroundColor:(c)=>c.dataIndex>=5?'rgba(32,29,94,.45)':NAVY,borderRadius:4},
+   {type:'line',label:'Dòng tiền tự do FCF (tỷ đ)',data:[972,2708,-3686,-1378,-1546,2916,3406,3552,3442,3839],borderColor:RED,backgroundColor:RED,tension:.3,pointRadius:4,borderWidth:3}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'tỷ đồng'}}}}});
+
+ // 08 · nợ vay và tiền
+ new Chart(document.getElementById('cDebt'),{data:{
+  labels:['2021','2022','2023','2024','2025','Q2/26'],
+  datasets:[
+   {type:'bar',label:'Tổng vay & trái phiếu (tỷ đ)',data:[3158,3187,3936,4533,6401,6406],backgroundColor:RED,borderRadius:4},
+   {type:'bar',label:'Tiền & tiền gửi có kỳ hạn (tỷ đ)',data:[3487,7117,5173,3011,4568,5843],backgroundColor:GREEN,borderRadius:4},
+   {type:'line',label:'Nợ ròng / VCSH (%)',data:[-1.1,-11.8,-3.3,3.6,3.8,1.1],borderColor:NAVY,backgroundColor:NAVY,yAxisID:'y1',tension:.3,pointRadius:4,borderWidth:3}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{
+   y:{title:{display:true,text:'tỷ đồng'}},
+   y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'%'}}}}});
+
+ // 09 · định giá lịch sử
+ new Chart(document.getElementById('cVal'),{data:{
+  labels:['2021','2022','2023','2024','2025','Hiện tại'],
+  datasets:[
+   {type:'bar',label:'P/B (lần)',data:[2.2,1.8,1.4,0.9,1.6,1.0],backgroundColor:NAVY,yAxisID:'y',borderRadius:4},
+   {type:'line',label:'ROE (%)',data:[4.4,8.7,12.4,10.3,14.3,14.7],borderColor:GREEN,backgroundColor:GREEN,yAxisID:'y1',tension:.3,pointRadius:4,borderWidth:3}
+  ]},options:{...R,plugins:{legend:{position:'bottom'}},scales:{
+   y:{title:{display:true,text:'P/B (lần)'},max:3},
+   y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'ROE %'},max:18}}}});
+}
+
+function printAll(){
+ const imgs=[];
+ document.querySelectorAll('canvas').forEach(c=>{const i=document.createElement('img');i.src=c.toDataURL('image/png');i.style.width='100%';c.style.display='none';c.parentNode.appendChild(i);imgs.push([c,i]);});
+ document.querySelectorAll('.tab').forEach(t=>t.classList.add('on'));
+ window.print();
+ setTimeout(()=>{imgs.forEach(([c,i])=>{i.remove();c.style.display='';});
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(document.querySelector('nav button.on').dataset.t).classList.add('on');},900);
+}
+
+drawGantt();
+calcNav();
+mkCharts();
+</script>
+</body></html>
