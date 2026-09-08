@@ -58,11 +58,14 @@ noscript a{color:#2E75B6;font-weight:700}
 
 <div class="stage">
   <div class="load" id="load"><div class="box"><div class="sp"></div><b id="loadT">Đang tải dashboard…</b><small>Lần đầu tải có thể mất vài giây</small></div></div>
-  <iframe id="frame" title="Dashboard" src="vhm.html"></iframe>
+  <iframe id="frame" title="Dashboard"></iframe>
 </div>
 
 <script>
 (function(){
+ // Tăng V mỗi lần deploy. GitHub Pages trả cache-control:max-age=600 nên
+ // nếu không đổi V, trình duyệt sẽ dùng lại bản cũ tới 10 phút.
+ var V='20260908b';
  var TABS={
   vhm:{src:'vhm.html',name:'VHM · Vinhomes'},
   vre:{src:'vre.html',name:'VRE · Vincom Retail'},
@@ -77,9 +80,10 @@ noscript a{color:#2E75B6;font-weight:700}
   var t=TABS[k];
   btns.forEach(function(b){ b.classList.toggle('on', b.dataset.k===k); });
   loadT.textContent='Đang tải dashboard '+t.name+'…';
-  if(frame.getAttribute('src')!==t.src){ load.classList.remove('gone'); frame.setAttribute('src',t.src); }
+  var url=t.src+'?v='+V;
+  if(frame.getAttribute('src')!==url){ load.classList.remove('gone'); frame.setAttribute('src',url); }
   else { load.classList.add('gone'); }
-  openNew.href=t.src;
+  openNew.href=url;
   document.title='FinSuccess · '+t.name;
   if(push && location.hash!=='#'+k) history.replaceState(null,'','#'+k);
  }
