@@ -103,7 +103,7 @@ td b{color:var(--navy)}
 .gt{min-width:1000px}
 .grow{display:grid;grid-template-columns:206px 1fr;align-items:stretch;border-bottom:1px solid #eef1f6}
 .grow:last-child{border-bottom:0}
-.grow.hdr{position:sticky;top:0;background:var(--navy);color:#fff;z-index:3;border-bottom:0}
+.grow.hdr{position:sticky;top:40px;background:var(--navy);color:#fff;z-index:4;border-bottom:0}
 .grow.hdr .glab{color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;background:var(--navy);border-right-color:rgba(255,255,255,.15)}
 .grow.grp{background:#f0f2f8}
 .grow.grp .glab{font-weight:800;color:var(--navy);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
@@ -111,11 +111,14 @@ td b{color:var(--navy)}
 .grow:nth-child(even) .glab{background:#fafbfd}
 .glab b{color:var(--navy);font-size:11.5px;line-height:1.3}
 .glab i{font-style:normal;font-size:9.5px;color:var(--mut)}
-.gtrack{position:relative;height:48px;background-image:repeating-linear-gradient(to right,transparent,transparent calc(20% - 1px),#eef1f6 calc(20% - 1px),#eef1f6 20%)}
+.gtrack{position:relative;min-height:48px;background-image:repeating-linear-gradient(to right,transparent,transparent calc(20% - 1px),#eef1f6 calc(20% - 1px),#eef1f6 20%)}
+.glanes{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:45px}
 .grow.hdr .gtrack{height:auto;background:none;display:grid;grid-template-columns:repeat(5,1fr)}
 .gy{text-align:center;padding:8px 0;font-size:11px;font-weight:800;border-left:1px solid rgba(255,255,255,.16)}
 .gy small{display:block;font-size:8.5px;font-weight:500;color:#b7b3e0}
-.gs{position:absolute;height:12px;border-radius:4px;font-size:8.5px;font-weight:800;color:#fff;display:flex;align-items:center;padding:0 5px;white-space:nowrap;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.13)}
+.gs{position:absolute;height:13px;border-radius:4px;font-size:9.5px;font-weight:800;color:#fff;display:flex;align-items:center;padding:0 6px;white-space:nowrap;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.13)}
+.gs.trunc{display:block;line-height:13px;text-overflow:ellipsis}
+.glbl{position:absolute;height:13px;display:flex;align-items:center;font-size:9.5px;font-weight:700;color:var(--navy);white-space:nowrap;pointer-events:none}
 .gs.launch{background:#5b9a1c}.gs.build{background:#2E75B6}.gs.hand{background:#201D5E}.gs.infra{background:#c98505}
 .gs.est{opacity:.58;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 4px,transparent 4px 8px)}
 .gnow{position:absolute;top:0;bottom:0;width:2px;background:var(--red);z-index:1}
@@ -1376,14 +1379,48 @@ function drawGantt(){
  let h='<div class="grow hdr"><div class="glab">Dự án</div><div class="gtrack">'+
    [2026,2027,2028,2029,2030].map(y=>`<div class="gy">${y}<small>Q1 · Q2 · Q3 · Q4</small></div>`).join('')+'</div></div>';
  GANTT.forEach(r=>{
-  if(r[0]==='grp'){h+=`<div class="grow grp"><div class="glab">${r[1]}</div><div class="gtrack" style="height:26px"></div></div>`;return;}
+  if(r[0]==='grp'){h+=`<div class="grow grp"><div class="glab">${r[1]}</div><div class="gtrack" style="min-height:0;height:26px"></div></div>`;return;}
   const segs=r[2].map(s=>{
    const left=W(s[1]), wid=W(s[2]-s[1]+1);
-   return `<div class="gs ${s[0]}${s[4]?' est':''}" style="left:${left}%;width:calc(${wid}% - 3px);top:${lane[s[0]]*15+2}px" title="${s[3].replace(/<[^>]*>/g,'')}">${s[3]}</div>`;
+   return `<div class="gs ${s[0]}${s[4]?' est':''}" style="left:${left}%;width:calc(${wid}% - 3px);top:${lane[s[0]]*15+2}px" data-l="${left}" data-w="${wid}" data-t="${lane[s[0]]*15+2}" title="${s[3].replace(/<[^>]*>/g,'')}">${s[3]}</div>`;
   }).join('');
-  h+=`<div class="grow"><div class="glab"><b>${r[0]}</b><i>${r[1]}</i></div><div class="gtrack">${segs}<div class="gnow" style="left:12.2%"></div></div></div>`;
+  h+=`<div class="grow"><div class="glab"><b>${r[0]}</b><i>${r[1]}</i></div><div class="gtrack"><div class="glanes">${segs}</div><div class="gnow" style="left:12.2%"></div></div></div>`;
  });
  el.innerHTML=h;
+ placeLabels();
+}
+function placeLabels(){
+ const tr=document.querySelector('#gantt .gtrack'); if(!tr||!tr.clientWidth)return;
+ document.querySelectorAll('#gantt .gs').forEach(bar=>{
+  const lanes=bar.parentNode; const old=lanes.querySelector('.glbl[data-for="'+bar.dataset.l+'_'+bar.dataset.t+'"]');
+  if(old)old.remove();
+  const txt=bar.getAttribute('title')||'';
+  bar.classList.remove('trunc'); bar.textContent=txt;
+  if(bar.scrollWidth<=bar.clientWidth+1)return;
+  bar.textContent='';
+  const l=parseFloat(bar.dataset.l), w=parseFloat(bar.dataset.w);
+  const sp=document.createElement('span'); sp.className='glbl';
+  sp.dataset.for=bar.dataset.l+'_'+bar.dataset.t;
+  sp.textContent=txt; sp.style.top=bar.dataset.t+'px';
+  lanes.appendChild(sp);
+  // thử bên phải -> bên trái -> nếu vẫn đè thì để trong thanh kèm dấu ...
+  sp.style.right=''; sp.style.left='calc('+(l+w)+'% + 5px)';
+  if(!clear(sp,bar,lanes)){
+   sp.style.left=''; sp.style.right='calc('+(100-l)+'% + 5px)';
+   if(!clear(sp,bar,lanes)){ sp.remove(); bar.textContent=txt; bar.classList.add('trunc'); }
+  }
+ });
+}
+/* nhãn đặt ngoài không được đè thanh khác cùng lane, cũng không được tràn khỏi track */
+function clear(sp,bar,lanes){
+ const sr=sp.getBoundingClientRect(), tr=lanes.closest('.gtrack').getBoundingClientRect();
+ if(sr.right>tr.right-1||sr.left<tr.left+1) return false;
+ let ok=true;
+ lanes.querySelectorAll('.gs').forEach(g=>{
+  if(g===bar)return; const gr=g.getBoundingClientRect();
+  if(Math.abs(gr.top-sr.top)<4 && sr.right>gr.left+1 && sr.left<gr.right-1) ok=false;
+ });
+ return ok;
 }
 drawGantt();
 drawCash();
@@ -1440,6 +1477,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); document.getElementById(b.dataset.t).classList.add('on');
+  if(b.dataset.t==='pl'&&typeof placeLabels==='function') placeLabels();
   window.scrollTo({top:0,behavior:'smooth'});
 });
 

@@ -104,7 +104,7 @@ td b{color:var(--navy)}
 .gt{min-width:1000px}
 .grow{display:grid;grid-template-columns:206px 1fr;align-items:stretch;border-bottom:1px solid #eef1f6}
 .grow:last-child{border-bottom:0}
-.grow.hdr{position:sticky;top:0;background:var(--navy);color:#fff;z-index:3;border-bottom:0}
+.grow.hdr{position:sticky;top:40px;background:var(--navy);color:#fff;z-index:4;border-bottom:0}
 .grow.hdr .glab{color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;background:var(--navy);border-right-color:rgba(255,255,255,.15)}
 .grow.grp{background:#f0f2f8}
 .grow.grp .glab{font-weight:800;color:var(--navy);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
@@ -112,11 +112,14 @@ td b{color:var(--navy)}
 .grow:nth-child(even) .glab{background:#fafbfd}
 .glab b{color:var(--navy);font-size:11.5px;line-height:1.3}
 .glab i{font-style:normal;font-size:9.5px;color:var(--mut)}
-.gtrack{position:relative;height:48px;background-image:repeating-linear-gradient(to right,transparent,transparent calc(20% - 1px),#eef1f6 calc(20% - 1px),#eef1f6 20%)}
-.grow.hdr .gtrack{height:auto;background:none;display:grid;grid-template-columns:repeat(5,1fr)}
+.gtrack{position:relative;min-height:52px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:9px 0;background-image:repeating-linear-gradient(to right,transparent,transparent calc(20% - 1px),#eef1f6 calc(20% - 1px),#eef1f6 20%)}
+.grow.grp .gtrack{min-height:0;padding:0}
+.gline{position:relative;height:15px}
+.grow.hdr .gtrack{min-height:0;padding:0;background:none;display:grid;grid-template-columns:repeat(5,1fr)}
 .gy{text-align:center;padding:8px 0;font-size:11px;font-weight:800;border-left:1px solid rgba(255,255,255,.16)}
 .gy small{display:block;font-size:8.5px;font-weight:500;color:#b7b3e0}
-.gs{position:absolute;height:12px;border-radius:4px;font-size:8.5px;font-weight:800;color:#fff;display:flex;align-items:center;padding:0 5px;white-space:nowrap;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.13)}
+.gs{position:absolute;top:0;height:15px;border-radius:4px;font-size:9.5px;font-weight:800;color:#fff;display:flex;align-items:center;padding:0 6px;white-space:nowrap;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.13)}
+.glbl{position:absolute;top:0;height:15px;display:flex;align-items:center;font-size:9.5px;font-weight:700;color:var(--navy);white-space:nowrap;pointer-events:none}
 .gs.launch{background:#5b9a1c}.gs.build{background:#2E75B6}.gs.hand{background:#201D5E}.gs.infra{background:#c98505}
 .gs.est{opacity:.58;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.3) 0 4px,transparent 4px 8px)}
 .gnow{position:absolute;top:0;bottom:0;width:2px;background:var(--red);z-index:1}
@@ -882,6 +885,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); document.getElementById(b.dataset.t).classList.add('on');
+  if(b.dataset.t==='pl') placeLabels();
   window.scrollTo({top:0,behavior:'smooth'});
 });
 
@@ -942,15 +946,35 @@ function drawGantt(){
  GROWS.forEach(r=>{
   if(r[0]==='grp'){ h+='<div class="grow grp"><div class="glab">'+r[1]+'</div><div class="gtrack" style="height:26px"></div></div>'; return; }
   h+='<div class="grow"><div class="glab"><b>'+r[1]+'</b><i>'+r[2]+'</i></div><div class="gtrack">';
-  (r[3]||[]).forEach((s,i)=>{
+  (r[3]||[]).forEach(s=>{
    const l=pos(s[1]), w=pos(s[2])-pos(s[1]);
-   h+='<div class="gs '+s[0]+(s[4]?' est':'')+'" style="left:'+l+'%;width:'+w+'%;top:'+(9+i*17)+'px" title="'+s[3]+'">'+s[3]+'</div>';
+   h+='<div class="gline"><div class="gs '+s[0]+(s[4]?' est':'')+'" style="left:'+l+'%;width:'+w+'%" data-l="'+l+'" data-w="'+w+'" title="'+s[3]+'">'+s[3]+'</div></div>';
   });
   h+='<div class="gnow" style="left:'+pos(2026.688)+'%"></div></div></div>';
  });
  document.getElementById('gantt').innerHTML=h;
+ placeLabels();
+}
+/* Nhãn nào dài hơn thanh thì đẩy ra ngoài thay vì cắt cụt */
+function placeLabels(){
+ const tr=document.querySelector('#gantt .gtrack');
+ if(!tr||!tr.clientWidth)return;            // tab đang ẩn -> đo sau
+ document.querySelectorAll('#gantt .gline').forEach(line=>{
+  const bar=line.querySelector('.gs'); if(!bar)return;
+  const old=line.querySelector('.glbl'); if(old)old.remove();
+  const txt=bar.getAttribute('title')||'';
+  bar.textContent=txt;                       // thử đặt vào trong trước
+  if(bar.scrollWidth<=bar.clientWidth+1)return;   // vừa thì thôi
+  bar.textContent='';                        // không vừa -> đẩy ra ngoài
+  const l=parseFloat(bar.dataset.l), w=parseFloat(bar.dataset.w);
+  const sp=document.createElement('span'); sp.className='glbl'; sp.textContent=txt;
+  if(l+w<=72) sp.style.left='calc('+(l+w)+'% + 7px)';
+  else        sp.style.right='calc('+(100-l)+'% + 7px)';
+  line.appendChild(sp);
+ });
 }
 drawGantt();
+let gzTO; addEventListener('resize',()=>{clearTimeout(gzTO);gzTO=setTimeout(placeLabels,150);});
 
 /* ---------- biểu đồ ---------- */
 const NAVY='#201D5E',GREEN='#82BC28',PURPLE='#9E2FB0',GOLD='#F3A712',BLUE='#2E75B6',RED='#D64545',GREY='#c7cedb';
@@ -1020,6 +1044,7 @@ function printAll(){
  const imgs=[];
  document.querySelectorAll('canvas').forEach(c=>{const i=document.createElement('img');i.src=c.toDataURL('image/png');i.style.width='100%';c.style.display='none';c.parentNode.appendChild(i);imgs.push([c,i]);});
  document.querySelectorAll('.tab').forEach(t=>t.classList.add('on'));
+ placeLabels();
  window.print();
  setTimeout(()=>{imgs.forEach(([c,i])=>{i.remove();c.style.display='';});
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
